@@ -15,8 +15,8 @@
     "test:e2e": "playwright test",
     "db:up": "docker compose up -d dynamodb",
     "db:down": "docker compose down",
-    "db:create": "tsx --env-file-if-exists=.env.local scripts/create-tables.ts",
-    "db:seed": "tsx --env-file-if-exists=.env.local scripts/seed.ts"
+    "db:create": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/create-tables.ts",
+    "db:seed": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1141.0",

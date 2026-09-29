@@ -1,4 +1,6 @@
 import { TEST_USERS } from "../tests/e2e/test-users";
+import { createCategory } from "../src/features/categories/repository";
+import { SEED_CATEGORIES } from "../src/features/categories/types";
 import { createUser } from "../src/features/users/repository";
 import { createDynamoClient } from "../src/lib/aws/client";
 import { hashPassword } from "../src/lib/auth/password";
@@ -20,6 +22,10 @@ run(async () => {
   });
   await dropTables(client, TEST_PREFIX);
   await ensureTables(client, TEST_PREFIX, () => {});
+
+  for (const [index, category] of SEED_CATEGORIES.entries()) {
+    await createCategory({ ...category, sortOrder: (index + 1) * 10 });
+  }
 
   for (const user of Object.values(TEST_USERS)) {
     await createUser({

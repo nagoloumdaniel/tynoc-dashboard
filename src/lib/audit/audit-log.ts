@@ -9,6 +9,7 @@ export type AuditAction =
   | "CREATE"
   | "UPDATE"
   | "ARCHIVE"
+  | "RESTORE"
   | "DELETE"
   | "STOCK_ADJUST"
   | "ROLE_CHANGE"

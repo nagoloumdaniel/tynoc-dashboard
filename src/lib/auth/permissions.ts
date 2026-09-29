@@ -4,6 +4,7 @@ export type AdminRole = (typeof ADMIN_ROLES)[number];
 export type Permission =
   | "read"
   | "products:write"
+  | "products:delete"
   | "categories:write"
   | "users:write"
   | "carts:write"

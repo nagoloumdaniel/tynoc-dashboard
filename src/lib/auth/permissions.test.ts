@@ -10,6 +10,8 @@ describe("can", () => {
     ["ADMIN", "users:write", true],
     ["ADMIN", "users:delete", false],
     ["ADMIN", "admins:manage", false],
+    ["SUPER_ADMIN", "products:delete", true],
+    ["ADMIN", "products:delete", false],
     ["VIEWER", "read", true],
     ["VIEWER", "products:write", false],
     ["VIEWER", "users:write", false],

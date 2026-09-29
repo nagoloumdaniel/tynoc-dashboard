@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z
-    .string()
+    .string({ error: "Saisissez une adresse email valide." })
     .trim()
     .pipe(z.email({ error: "Saisissez une adresse email valide." })),
   password: z

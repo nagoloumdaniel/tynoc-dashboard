@@ -23,9 +23,11 @@ describe("loginSchema", () => {
     );
   });
 
-  it("rejects a missing field", () => {
-    expect(loginSchema.safeParse({ email: null, password: null }).success).toBe(
-      false,
-    );
+  it("explains missing fields in French", () => {
+    const result = loginSchema.safeParse({ email: null, password: null });
+    expect(result.error?.issues.map((issue) => issue.message)).toEqual([
+      "Saisissez une adresse email valide.",
+      "Saisissez votre mot de passe.",
+    ]);
   });
 });

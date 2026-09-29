@@ -38,3 +38,10 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
+/** "jeanne@exemple.fr" → "j•••@exemple.fr", for read-only accounts. */
+export function maskEmail(email: string): string {
+  const at = email.indexOf("@");
+  if (at < 1) return "•••";
+  return `${email[0]}•••${email.slice(at)}`;
+}

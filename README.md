@@ -11,7 +11,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 - [x] Phase 1 — Squelette : outillage, CI, DynamoDB Local, layout responsive
 - [x] Phase 2 — Authentification et rôles
 - [x] Phase 3 — Produits
-- [ ] Phase 4 — Catégories
+- [x] Phase 4 — Catégories
 - [ ] Phase 5 — Utilisateurs
 - [ ] Phase 6 — Paniers et wishlists
 - [ ] Phase 7 — Dashboard et activité
@@ -74,6 +74,12 @@ Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts).
 - Création, fiche, modification, ajustement de stock avec raison, archivage / restauration (en brouillon), suppression définitive réservée au super administrateur et refusée si le produit est dans un panier ou une wishlist.
 - Montants en centimes ; SKU et slug uniques ; verrouillage optimiste (`version`) ; chaque écriture met à jour les compteurs du tableau de bord et le journal d'activité dans la même transaction DynamoDB.
 - **Limite connue :** la liste charge le catalogue via l'index `byStatus` puis filtre en mémoire, adapté à quelques milliers de produits. Au-delà (~5 000), prévoir un moteur de recherche (OpenSearch, Meilisearch).
+
+## Catégories
+
+- `/admin/categories` : liste hiérarchique (un niveau de sous-catégories), recherche, filtre actives / inactives, création et modification dans une fenêtre, activation / désactivation, suppression.
+- Suppression refusée tant que la catégorie contient des produits (même archivés) ou des sous-catégories ; une catégorie désactivée n'est plus proposée pour les nouveaux produits, sans toucher aux produits existants.
+- Côté produits : libellés « Parent › Enfant », et filtrer par une catégorie principale inclut ses sous-catégories.
 
 ## Authentification et rôles
 

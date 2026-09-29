@@ -5,7 +5,8 @@ import { Toaster as Sonner } from "sonner";
 export function Toaster() {
   return (
     <Sonner
-      position="bottom-right"
+      // At the bottom, full-width mobile toasts covered list and card actions.
+      position="top-center"
       richColors
       closeButton
       toastOptions={{ className: "font-sans" }}

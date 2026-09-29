@@ -5,6 +5,9 @@ import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { z } from "zod";
 import { markLogin } from "@/features/users/repository";
+import { passwordChangeSchema } from "@/features/users/schemas";
+import { changeOwnPassword } from "@/features/users/service";
+import { failure } from "@/lib/action-result";
 import { writeAuditLog } from "@/lib/audit/audit-log";
 import { getSession } from "@/lib/auth/dal";
 import { safeNextPath } from "@/lib/auth/safe-redirect";
@@ -100,4 +103,40 @@ export async function logout(): Promise<void> {
     );
   }
   redirect("/login");
+}
+
+export type PasswordChangeState =
+  | {
+      message?: string;
+      fieldErrors?: { current?: string[]; next?: string[]; confirm?: string[] };
+    }
+  | undefined;
+
+export async function changePasswordAction(
+  _previous: PasswordChangeState,
+  formData: FormData,
+): Promise<PasswordChangeState> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const parsed = passwordChangeSchema.safeParse({
+    current: String(formData.get("current") ?? ""),
+    next: String(formData.get("next") ?? ""),
+    confirm: String(formData.get("confirm") ?? ""),
+  });
+  if (!parsed.success) {
+    return { fieldErrors: z.flattenError(parsed.error).fieldErrors };
+  }
+
+  try {
+    const user = await changeOwnPassword(session, parsed.data);
+    // Every session was closed: open a fresh one for this browser.
+    await startSession(user);
+  } catch (error) {
+    const result = failure(error);
+    return result.code === "WRONG_PASSWORD"
+      ? { fieldErrors: { current: [result.message] } }
+      : { message: result.message };
+  }
+  redirect("/admin?flash=password");
 }

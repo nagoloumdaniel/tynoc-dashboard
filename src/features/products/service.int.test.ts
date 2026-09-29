@@ -271,7 +271,7 @@ describe("product service", () => {
     expect(withOutOfStock.lowStock - globalBefore.lowStock).toBe(0);
 
     v = (await archiveProduct(actor, product.id, v)).version;
-    v = (await restoreProduct(actor, product.id, v)).version;
+    await restoreProduct(actor, product.id, v);
     await deleteProduct(actor, product.id);
 
     const after = await readStats("GLOBAL");

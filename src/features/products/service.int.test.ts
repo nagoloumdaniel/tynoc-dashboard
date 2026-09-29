@@ -1,7 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { beforeAll, describe, expect, it } from "vitest";
-import { createCategory } from "@/features/categories/repository";
+import { createCategory } from "@/features/categories/service";
+import { ROOT_PARENT } from "@/features/categories/types";
 import { db, table } from "@/lib/aws/dynamodb";
 import type { Session } from "@/lib/auth/session";
 import type { ProductCreateInput } from "./schemas";
@@ -31,20 +32,18 @@ let inactiveCategory: string;
 
 beforeAll(async () => {
   const suffix = randomUUID().slice(0, 8);
-  categoryA = (
-    await createCategory({ name: "A", slug: `a-${suffix}`, sortOrder: 1 })
-  ).id;
-  categoryB = (
-    await createCategory({ name: "B", slug: `b-${suffix}`, sortOrder: 2 })
-  ).id;
-  inactiveCategory = (
-    await createCategory({
-      name: "Off",
-      slug: `off-${suffix}`,
-      sortOrder: 3,
-      isActive: false,
-    })
-  ).id;
+  const category = (name: string, sortOrder: number, isActive = true) =>
+    createCategory(actor, {
+      name,
+      slug: `${name.toLowerCase()}-${suffix}`,
+      description: undefined,
+      parentId: ROOT_PARENT,
+      sortOrder,
+      isActive,
+    });
+  categoryA = (await category("A", 1)).id;
+  categoryB = (await category("B", 2)).id;
+  inactiveCategory = (await category("Off", 3, false)).id;
 });
 
 function input(

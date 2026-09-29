@@ -2,7 +2,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findCategory } from "@/features/categories/repository";
+import { listCategoryLabels } from "@/features/categories/service";
 import {
   ProductStatusBadge,
   StockBadge,
@@ -71,8 +71,8 @@ export default async function ProductPage({
   const product = await getProduct(productId);
   if (!product) notFound();
 
-  const [category, usage, activity] = await Promise.all([
-    findCategory(product.categoryId),
+  const [labels, usage, activity] = await Promise.all([
+    listCategoryLabels(),
     getProductUsage(product.id),
     getProductActivity(product.id, 10),
   ]);
@@ -110,7 +110,9 @@ export default async function ProductPage({
         <div className="space-y-6">
           <Card title="Informations">
             <dl className="divide-y">
-              <Row label="Catégorie">{category?.name ?? "—"}</Row>
+              <Row label="Catégorie">
+                {labels.get(product.categoryId) ?? "—"}
+              </Row>
               <Row label="Slug">
                 <span className="font-mono">{product.slug}</span>
               </Row>

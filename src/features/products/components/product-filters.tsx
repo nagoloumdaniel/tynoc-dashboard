@@ -32,7 +32,7 @@ export function ProductFilters({
   categories,
 }: {
   query: ProductListQuery;
-  categories: { id: string; name: string }[];
+  categories: { id: string; label: string }[];
 }) {
   const { hrefWith, setFilters, pending } = useUrlFilters();
   const filtered =
@@ -90,7 +90,7 @@ export function ProductFilters({
           <option value="">Toutes les catégories</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
-              {category.name}
+              {category.label}
             </option>
           ))}
         </Select>

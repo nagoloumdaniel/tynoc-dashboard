@@ -1,6 +1,5 @@
 import "server-only";
 import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { buildAuditLogItem, type AuditEntry } from "@/lib/audit/audit-log";
 import { db, table } from "@/lib/aws/dynamodb";
 import type { TaggedItem } from "@/lib/aws/transaction";
 import type { StatsDelta } from "./stats";
@@ -132,15 +131,6 @@ export function releaseUniqueOp(tag: string, pk: string): TaggedItem {
   return {
     tag,
     item: { Delete: { TableName: table("Uniques"), Key: { pk } } },
-  };
-}
-
-export function auditOp(entry: AuditEntry): TaggedItem {
-  return {
-    tag: "audit",
-    item: {
-      Put: { TableName: table("AuditLogs"), Item: buildAuditLogItem(entry) },
-    },
   };
 }
 

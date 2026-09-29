@@ -2,6 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { db, table } from "@/lib/aws/dynamodb";
+import type { TaggedItem } from "@/lib/aws/transaction";
 
 export type AuditAction =
   | "LOGIN"
@@ -10,6 +11,8 @@ export type AuditAction =
   | "UPDATE"
   | "ARCHIVE"
   | "RESTORE"
+  | "ACTIVATE"
+  | "DEACTIVATE"
   | "DELETE"
   | "STOCK_ADJUST"
   | "ROLE_CHANGE"
@@ -40,6 +43,16 @@ export function buildAuditLogItem(entry: AuditEntry, now = new Date()) {
     feed: "LOG",
     id,
     createdAt,
+  };
+}
+
+/** Audit entry written in the same transaction as the change it records. */
+export function auditOp(entry: AuditEntry): TaggedItem {
+  return {
+    tag: "audit",
+    item: {
+      Put: { TableName: table("AuditLogs"), Item: buildAuditLogItem(entry) },
+    },
   };
 }
 

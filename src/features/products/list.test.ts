@@ -120,6 +120,13 @@ describe("filterSortPaginate", () => {
     expect(ids(last)).toEqual(["40", "41", "42", "43", "44"]);
   });
 
+  it("filters on a set of categories (a parent and its children)", () => {
+    const result = filterSortPaginate(catalog, query({ category: "cat_a" }), {
+      categoryIds: ["cat_a", "cat_b"],
+    });
+    expect(ids(result)).toEqual(["1", "3", "2"]);
+  });
+
   it("returns one empty page when nothing matches", () => {
     expect(filterSortPaginate(catalog, query({ q: "introuvable" }))).toEqual({
       items: [],

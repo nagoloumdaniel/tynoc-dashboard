@@ -30,6 +30,8 @@ export default defineConfig({
           environment: "node",
           include: ["src/**/*.int.test.ts"],
           globalSetup: ["./src/test/integration-setup.ts"],
+          // Files share the global Stats counters: run them one at a time.
+          fileParallelism: false,
           env: {
             AWS_REGION: "eu-west-3",
             DYNAMODB_ENDPOINT: "http://localhost:8000",

@@ -3,7 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/admin/page-header";
 import { Button } from "@/components/ui/button";
-import { listActiveCategories } from "@/features/categories/repository";
+import {
+  listCategoryLabels,
+  listUsableCategoryOptions,
+} from "@/features/categories/service";
 import { ProductForm } from "@/features/products/components/product-form";
 import { getProduct } from "@/features/products/service";
 import { requireAdmin } from "@/lib/auth/dal";
@@ -16,11 +19,24 @@ export default async function EditProductPage({
 }: PageProps<"/admin/products/[productId]/edit">) {
   await requireAdmin("products:write");
   const { productId } = await params;
-  const [product, categories] = await Promise.all([
+  const [product, usable, labels] = await Promise.all([
     getProduct(productId),
-    listActiveCategories(),
+    listUsableCategoryOptions(),
+    listCategoryLabels(),
   ]);
   if (!product) notFound();
+
+  // A deactivated current category stays selectable: saving other fields
+  // must not force a new category.
+  const categories = usable.some((c) => c.id === product.categoryId)
+    ? usable
+    : [
+        {
+          id: product.categoryId,
+          label: `${labels.get(product.categoryId) ?? "Catégorie supprimée"} (inactive)`,
+        },
+        ...usable,
+      ];
 
   if (product.status === "ARCHIVED") {
     return (
@@ -42,7 +58,7 @@ export default async function EditProductPage({
       <PageHeader title={`Modifier « ${product.name} »`} />
       <ProductForm
         mode="edit"
-        categories={categories.map(({ id, name }) => ({ id, name }))}
+        categories={categories}
         product={{
           id: product.id,
           version: product.version,

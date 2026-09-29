@@ -45,3 +45,13 @@ export function maskEmail(email: string): string {
   if (at < 1) return "•••";
   return `${email[0]}•••${email.slice(at)}`;
 }
+
+/** "Jeanne Martin" → "JM", for avatars. */
+export function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   centsToEuroInput,
+  initials,
   maskEmail,
   formatPrice,
   normalizeText,
@@ -70,5 +71,12 @@ describe("maskEmail", () => {
 
   it("masks a malformed value entirely", () => {
     expect(maskEmail("sans-arobase")).toBe("•••");
+  });
+});
+
+describe("initials", () => {
+  it("takes the first letter of the first two words", () => {
+    expect(initials("jeanne  martin dupont")).toBe("JM");
+    expect(initials("Paul")).toBe("P");
   });
 });

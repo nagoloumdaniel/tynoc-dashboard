@@ -12,16 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/features/auth/actions";
+import { initials } from "@/lib/format";
 import { type AdminRole, ROLE_LABELS } from "@/lib/auth/permissions";
-
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
 
 export function AccountMenu({
   name,

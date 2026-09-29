@@ -3,10 +3,12 @@ import {
   archiveProduct,
   createProduct,
 } from "../src/features/products/service";
+import { createUser } from "../src/features/users/repository";
 import { AppError } from "../src/lib/errors";
 import { db, table } from "../src/lib/aws/dynamodb";
 import { isConditionFailure } from "../src/lib/aws/errors";
 import { hasFlag, prepareTarget, run } from "./lib/cli";
+import { DEMO_CUSTOMERS } from "./lib/demo-customers";
 import { DEMO_PRODUCTS } from "./lib/demo-products";
 import { SEED_ACTOR, seedCategories } from "./lib/seed-categories";
 
@@ -63,6 +65,20 @@ run(async () => {
     }
     console.log(
       `+ ${created} produit(s) de démonstration (${DEMO_PRODUCTS.length - created} déjà présents)`,
+    );
+
+    let customers = 0;
+    for (const customer of DEMO_CUSTOMERS) {
+      try {
+        await createUser({ ...customer, role: "CUSTOMER" });
+        customers++;
+      } catch (error) {
+        if (!(error instanceof AppError && error.code === "EMAIL_TAKEN"))
+          throw error;
+      }
+    }
+    console.log(
+      `+ ${customers} client(s) de démonstration (${DEMO_CUSTOMERS.length - customers} déjà présents)`,
     );
   }
 });

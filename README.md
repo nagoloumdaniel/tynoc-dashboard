@@ -10,7 +10,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 
 - [x] Phase 1 — Squelette : outillage, CI, DynamoDB Local, layout responsive
 - [x] Phase 2 — Authentification et rôles
-- [ ] Phase 3 — Produits
+- [x] Phase 3 — Produits
 - [ ] Phase 4 — Catégories
 - [ ] Phase 5 — Utilisateurs
 - [ ] Phase 6 — Paniers et wishlists
@@ -26,7 +26,8 @@ pnpm install
 cp .env.example .env.local
 pnpm db:up        # démarre DynamoDB Local sur le port 8000
 pnpm db:create    # crée les tables (idempotent)
-pnpm db:seed      # données initiales
+pnpm db:seed      # compteurs + 6 catégories de départ
+pnpm db:seed -- --demo  # facultatif : ~40 produits de démonstration (local uniquement)
 pnpm admin:create # premier super administrateur (email, nom, mot de passe)
 pnpm dev          # http://localhost:3000/login
 ```
@@ -66,6 +67,13 @@ Tester un déploiement : `E2E_BASE_URL=https://tynoc-dashboard.vercel.app pnpm t
 | `AWS_ROLE_ARN`          | —           | production : rôle IAM assumé via Vercel OIDC         |
 
 Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts). Aucun secret AWS n'est committé ; en production l'accès passe par un rôle IAM (OIDC).
+
+## Produits
+
+- Liste `/admin/products` : recherche sur le nom et le SKU (sans tenir compte des accents), filtres statut / catégorie / niveau de stock, 8 tris, 20 produits par page. Les filtres sont dans l'URL.
+- Création, fiche, modification, ajustement de stock avec raison, archivage / restauration (en brouillon), suppression définitive réservée au super administrateur et refusée si le produit est dans un panier ou une wishlist.
+- Montants en centimes ; SKU et slug uniques ; verrouillage optimiste (`version`) ; chaque écriture met à jour les compteurs du tableau de bord et le journal d'activité dans la même transaction DynamoDB.
+- **Limite connue :** la liste charge le catalogue via l'index `byStatus` puis filtre en mémoire, adapté à quelques milliers de produits. Au-delà (~5 000), prévoir un moteur de recherche (OpenSearch, Meilisearch).
 
 ## Authentification et rôles
 

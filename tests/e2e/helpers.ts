@@ -13,8 +13,16 @@ export async function logIn(
   await page.getByRole("button", { name: "Se connecter" }).click();
 }
 
+/**
+ * The account menu button. Locally the test accounts have known names; on a
+ * deployment the real admin's name is unknown, so any account button matches.
+ */
+export function accountButton(page: Page, name: string) {
+  return page.getByRole("button", {
+    name: IS_REMOTE ? /^Compte de / : `Compte de ${name}`,
+  });
+}
+
 export async function expectLoggedIn(page: Page, name: string) {
-  await expect(
-    page.getByRole("button", { name: `Compte de ${name}` }),
-  ).toBeVisible();
+  await expect(accountButton(page, name)).toBeVisible();
 }

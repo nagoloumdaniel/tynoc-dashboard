@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectLoggedIn, IS_REMOTE, logIn } from "./helpers";
+import { accountButton, expectLoggedIn, IS_REMOTE, logIn } from "./helpers";
 import { AUTH_STATE, TEST_USERS } from "./test-users";
 
 const INVALID = "Email ou mot de passe incorrect.";
@@ -56,9 +56,7 @@ test.describe("anonymous visitor", () => {
     await logIn(page, TEST_USERS.superAdmin);
     await expect(page).toHaveURL(/\/admin$/);
 
-    await page
-      .getByRole("button", { name: `Compte de ${TEST_USERS.superAdmin.name}` })
-      .click();
+    await accountButton(page, TEST_USERS.superAdmin.name).click();
     await page.getByRole("menuitem", { name: "Se déconnecter" }).click();
     await expect(page).toHaveURL(/\/login$/);
 

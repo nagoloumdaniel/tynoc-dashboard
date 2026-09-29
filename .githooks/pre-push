@@ -1,0 +1,3 @@
+#!/bin/sh
+# Runs the full local CI before every push (see scripts/ci-local.mjs).
+exec node scripts/ci-local.mjs

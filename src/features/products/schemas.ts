@@ -154,7 +154,11 @@ export const stockAdjustmentSchema = z
     }
   });
 
-export type StockAdjustment = z.output<typeof stockAdjustmentSchema>;
+// The transform yields `note: string | undefined`; callers may simply omit it.
+export type StockAdjustment = Omit<
+  z.output<typeof stockAdjustmentSchema>,
+  "note"
+> & { note?: string };
 
 export const PRODUCT_SORTS = [
   "name",

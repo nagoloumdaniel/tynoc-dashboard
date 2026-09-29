@@ -17,6 +17,8 @@ export type SessionRecord = {
   role: AdminRole;
   email: string;
   name: string;
+  /** Temporary password: every admin page redirects to the change form. */
+  mustChangePassword?: boolean;
   createdAt: string;
   lastSeenAt: string;
   /** Epoch seconds, DynamoDB TTL attribute. */

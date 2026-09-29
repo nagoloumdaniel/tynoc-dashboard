@@ -24,6 +24,7 @@ export type Session = {
   role: AdminRole;
   email: string;
   name: string;
+  mustChangePassword?: boolean;
 };
 
 export async function startSession(user: AuthUser): Promise<void> {
@@ -35,6 +36,7 @@ export async function startSession(user: AuthUser): Promise<void> {
     role: user.role,
     email: user.email,
     name: user.name,
+    mustChangePassword: user.mustChangePassword,
     createdAt: now,
     lastSeenAt: now,
     ...newSessionTimes(nowInSeconds()),
@@ -76,6 +78,7 @@ export async function readSession(): Promise<Session | null> {
     role: record.role,
     email: record.email,
     name: record.name,
+    mustChangePassword: record.mustChangePassword === true,
   };
 }
 

@@ -16,3 +16,10 @@ setup("log in as viewer", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin$/);
   await page.context().storageState({ path: AUTH_STATE.viewer });
 });
+
+setup("log in as admin", async ({ page }) => {
+  setup.skip(IS_REMOTE, "test accounts exist only in the local test tables");
+  await logIn(page, TEST_USERS.admin);
+  await expect(page).toHaveURL(/\/admin$/);
+  await page.context().storageState({ path: AUTH_STATE.admin });
+});

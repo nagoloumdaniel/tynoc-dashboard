@@ -5,12 +5,19 @@ export type Category = {
   id: string;
   name: string;
   slug: string;
+  description?: string;
+  /** ROOT_PARENT for a top-level category, else the id of a top-level one. */
   parentId: string;
   sortOrder: number;
   isActive: boolean;
+  /** Missing on categories created before phase 4: read as 1. */
+  version?: number;
   createdAt: string;
   updatedAt: string;
 };
+
+export const isRoot = (category: Pick<Category, "parentId">) =>
+  category.parentId === ROOT_PARENT;
 
 export const SEED_CATEGORIES = [
   { name: "Mobilier", slug: "mobilier" },

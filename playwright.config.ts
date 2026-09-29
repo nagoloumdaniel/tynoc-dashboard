@@ -1,8 +1,16 @@
 import { defineConfig, devices } from "@playwright/test";
+import { AUTH_STATE } from "./tests/e2e/test-users";
 
 const PORT = 3100;
 // Set to run the suite against a deployment (e.g. https://tynoc-dashboard.vercel.app).
 const REMOTE_URL = process.env.E2E_BASE_URL;
+
+// The local server under test reads the disposable test tables.
+const TEST_DB_ENV = {
+  AWS_REGION: "eu-west-3",
+  DYNAMODB_ENDPOINT: "http://localhost:8000",
+  DYNAMODB_TABLE_PREFIX: "tynoc-test-",
+};
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -10,19 +18,32 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
+  globalSetup: REMOTE_URL ? undefined : "./tests/e2e/global-setup.ts",
   use: {
     baseURL: REMOTE_URL ?? `http://localhost:${PORT}`,
     trace: "on-first-retry",
   },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    {
+      name: "desktop",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: AUTH_STATE.superAdmin,
+      },
+      dependencies: ["setup"],
+    },
     {
       name: "mobile",
       use: {
         ...devices["Desktop Chrome"],
         viewport: { width: 375, height: 740 },
         hasTouch: true,
+        storageState: AUTH_STATE.superAdmin,
       },
+      dependencies: ["setup"],
+      // Login flows do not depend on the viewport; run them once.
+      testIgnore: /auth\.spec\.ts/,
     },
   ],
   webServer: REMOTE_URL
@@ -32,8 +53,9 @@ export default defineConfig({
         command: process.env.CI
           ? `pnpm start -p ${PORT}`
           : `pnpm dev -p ${PORT}`,
-        url: `http://localhost:${PORT}/admin`,
+        url: `http://localhost:${PORT}/login`,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,
+        env: TEST_DB_ENV,
       },
 });

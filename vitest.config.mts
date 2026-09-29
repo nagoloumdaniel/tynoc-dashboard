@@ -6,14 +6,37 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [tsconfigPaths(), react()],
   test: {
-    environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"],
-    include: ["src/**/*.test.{ts,tsx}"],
     // server-only throws outside a React Server environment
     alias: {
       "server-only": fileURLToPath(
         new URL("./src/test/empty.ts", import.meta.url),
       ),
     },
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          environment: "jsdom",
+          setupFiles: ["./vitest.setup.ts"],
+          include: ["src/**/*.test.{ts,tsx}"],
+          exclude: ["**/node_modules/**", "src/**/*.int.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "integration",
+          environment: "node",
+          include: ["src/**/*.int.test.ts"],
+          globalSetup: ["./src/test/integration-setup.ts"],
+          env: {
+            AWS_REGION: "eu-west-3",
+            DYNAMODB_ENDPOINT: "http://localhost:8000",
+            DYNAMODB_TABLE_PREFIX: "tynoc-test-",
+          },
+        },
+      },
+    ],
   },
 });

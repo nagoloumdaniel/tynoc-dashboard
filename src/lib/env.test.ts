@@ -7,7 +7,19 @@ describe("parseServerEnv", () => {
       AWS_REGION: "eu-west-3",
       DYNAMODB_ENDPOINT: undefined,
       DYNAMODB_TABLE_PREFIX: "tynoc-",
+      AWS_ROLE_ARN: undefined,
     });
+  });
+
+  it("accepts an IAM role ARN for Vercel OIDC", () => {
+    const arn = "arn:aws:iam::123456789012:role/tynoc-vercel";
+    expect(parseServerEnv({ AWS_ROLE_ARN: arn }).AWS_ROLE_ARN).toBe(arn);
+  });
+
+  it("rejects a value that is not an IAM role ARN", () => {
+    expect(() => parseServerEnv({ AWS_ROLE_ARN: "abc" })).toThrow(
+      /AWS_ROLE_ARN/,
+    );
   });
 
   it("treats an empty endpoint as undefined", () => {

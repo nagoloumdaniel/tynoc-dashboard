@@ -64,7 +64,9 @@ Chaque connexion réussie et chaque déconnexion écrivent un `AuditLog` (`actio
 
 ## 4. Cookie
 
-Nom `tynoc_session`, valeur : 32 octets aléatoires en base64url. Attributs : `HttpOnly`, `Secure` (sauf `http://localhost`), `SameSite=Lax`, `Path=/`, `Max-Age` aligné sur l'expiration d'inactivité.
+Nom `tynoc_session`, valeur : 32 octets aléatoires en base64url. Attributs : `HttpOnly`, `Secure` en production, `SameSite=Lax`, `Path=/`, `Max-Age` = 7 jours (plafond absolu).
+
+Next.js interdit de modifier un cookie pendant le rendu d'une page ; l'expiration d'inactivité (12 h) est donc appliquée uniquement côté base, via `expiresAt`. Un cookie encore présent mais dont la session a expiré est traité comme absent.
 
 ## 5. Modules
 

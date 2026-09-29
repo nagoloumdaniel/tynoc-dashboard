@@ -55,7 +55,11 @@ export default async function ProductsPage({
 
       {result.total > 0 ? (
         <>
-          <ProductTable products={result.items} categoryNames={categoryNames} />
+          <ProductTable
+            products={result.items}
+            categoryNames={categoryNames}
+            canWrite={canWrite}
+          />
           <Pagination
             page={result.page}
             pageCount={result.pageCount}

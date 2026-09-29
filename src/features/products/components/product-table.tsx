@@ -4,6 +4,7 @@ import { type Column, DataTable } from "@/components/data-table/data-table";
 import type { ProductListItem } from "../types";
 import { ProductStatusBadge, StockBadge } from "./badges";
 import { Price } from "./price";
+import { RowActions } from "./row-actions";
 
 function Thumbnail() {
   // Images arrive in phase 7; a neutral tile keeps rows aligned.
@@ -39,9 +40,11 @@ function NameCell({ product }: { product: ProductListItem }) {
 export function ProductTable({
   products,
   categoryNames,
+  canWrite,
 }: {
   products: ProductListItem[];
   categoryNames: Map<string, string>;
+  canWrite: boolean;
 }) {
   const category = (id: string) => categoryNames.get(id) ?? "—";
 
@@ -82,6 +85,17 @@ export function ProductTable({
       ),
       className: "hidden lg:table-cell",
     },
+    ...(canWrite
+      ? [
+          {
+            key: "actions",
+            header: <span className="sr-only">Actions</span>,
+            cell: (p: ProductListItem) =>
+              p.status === "ARCHIVED" ? null : <RowActions product={p} />,
+            className: "w-24",
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -109,6 +123,11 @@ export function ProductTable({
               <ProductStatusBadge status={p.status} />
             </dd>
           </dl>
+          {canWrite && p.status !== "ARCHIVED" ? (
+            <div className="mt-3 border-t pt-2">
+              <RowActions product={p} />
+            </div>
+          ) : null}
         </article>
       )}
     />

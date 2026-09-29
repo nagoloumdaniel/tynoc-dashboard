@@ -100,9 +100,24 @@ export const TABLES = {
     AttributeDefinitions: [s("pk")],
     KeySchema: [hash("pk")],
   },
+  Sessions: {
+    AttributeDefinitions: [s("pk"), s("userId")],
+    KeySchema: [hash("pk")],
+    GlobalSecondaryIndexes: [gsi("byUser", "userId")],
+  },
+  RateLimits: {
+    AttributeDefinitions: [s("pk")],
+    KeySchema: [hash("pk")],
+  },
 } satisfies Record<string, TableDefinition>;
 
 export type TableKey = keyof typeof TABLES;
+
+// Epoch-seconds attributes DynamoDB uses to purge expired items.
+export const TTL_ATTRIBUTES: Partial<Record<TableKey, string>> = {
+  Sessions: "expiresAt",
+  RateLimits: "expiresAt",
+};
 
 export function tableName(table: TableKey, prefix: string): string {
   return `${prefix}${table}`;

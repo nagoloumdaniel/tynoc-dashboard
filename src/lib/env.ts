@@ -11,6 +11,11 @@ const serverEnvSchema = z.object({
     .string()
     .regex(/^[a-zA-Z0-9_.-]*$/, "lettres, chiffres, _ . - uniquement")
     .default("tynoc-"),
+  // Production only: IAM role assumed through Vercel OIDC (no stored AWS keys).
+  AWS_ROLE_ARN: z.preprocess(
+    emptyToUndefined,
+    z.string().startsWith("arn:aws:iam::").optional(),
+  ),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

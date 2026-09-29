@@ -1,44 +1,33 @@
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
-import { createDocumentClient } from "../src/lib/aws/dynamodb";
-import { tableName } from "../src/lib/aws/tables";
-import { getServerEnv } from "../src/lib/env";
+import { db, table } from "../src/lib/aws/dynamodb";
+import { isConditionFailure } from "../src/lib/aws/errors";
+import { prepareTarget, run } from "./lib/cli";
 
-// Minimal seed for Phase 1: the global stats item read by the dashboard.
-// Entity fixtures (products, users…) are added with their modules.
-async function main() {
-  const env = getServerEnv();
-  if (!env.DYNAMODB_ENDPOINT) {
-    throw new Error(
-      "DYNAMODB_ENDPOINT manquant : ce script ne cible que DynamoDB Local.",
+// Creates the global stats item read by the dashboard, without resetting
+// counters that already exist. Entity fixtures come with their modules.
+run(async () => {
+  prepareTarget();
+  try {
+    await db().send(
+      new PutCommand({
+        TableName: table("Stats"),
+        Item: {
+          pk: "GLOBAL",
+          totalUsers: 0,
+          totalProducts: 0,
+          totalCategories: 0,
+          cartItems: 0,
+          wishlistItems: 0,
+          outOfStock: 0,
+          lowStock: 0,
+          updatedAt: new Date().toISOString(),
+        },
+        ConditionExpression: "attribute_not_exists(pk)",
+      }),
     );
+    console.log("+ Stats#GLOBAL");
+  } catch (error) {
+    if (!isConditionFailure(error)) throw error;
+    console.log("= Stats#GLOBAL (existe déjà)");
   }
-
-  const doc = createDocumentClient({
-    region: env.AWS_REGION,
-    endpoint: env.DYNAMODB_ENDPOINT,
-  });
-  const now = new Date().toISOString();
-
-  await doc.send(
-    new PutCommand({
-      TableName: tableName("Stats", env.DYNAMODB_TABLE_PREFIX),
-      Item: {
-        pk: "GLOBAL",
-        totalUsers: 0,
-        totalProducts: 0,
-        totalCategories: 0,
-        cartItems: 0,
-        wishlistItems: 0,
-        outOfStock: 0,
-        lowStock: 0,
-        updatedAt: now,
-      },
-    }),
-  );
-  console.log("+ Stats#GLOBAL");
-}
-
-main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exit(1);
 });

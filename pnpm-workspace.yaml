@@ -1,0 +1,6 @@
+allowBuilds:
+  esbuild: false
+  sharp: false
+  unrs-resolver: false
+# Hoisted layout: the isolated layout hit EPERM on Windows when renaming native packages
+nodeLinker: hoisted

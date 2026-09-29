@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tynoc Admin
 
-## Getting Started
+Tableau de bord d'administration e-commerce : produits, catégories, utilisateurs, paniers et wishlists.
 
-First, run the development server:
+**Stack :** Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4, Radix UI, DynamoDB, Vitest, Playwright.
+
+La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md](ROADMAP.md).
+
+## État d'avancement
+
+- [x] Phase 1 — Squelette : outillage, CI, DynamoDB Local, layout responsive
+- [ ] Phase 2 — Authentification et rôles
+- [ ] Phase 3 — Produits
+- [ ] Phase 4 — Catégories
+- [ ] Phase 5 — Utilisateurs
+- [ ] Phase 6 — Paniers et wishlists
+- [ ] Phase 7 — Dashboard et activité
+- [ ] Phase 8 — Durcissement et livraison
+
+## Installation locale
+
+Prérequis : Node.js 24, pnpm 11, Docker.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env.local
+pnpm db:up        # démarre DynamoDB Local sur le port 8000
+pnpm db:create    # crée les tables (idempotent)
+pnpm db:seed      # données initiales
+pnpm dev          # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script              | Rôle                                               |
+| ------------------- | -------------------------------------------------- |
+| `pnpm dev`          | serveur de développement                           |
+| `pnpm build`        | build de production                                |
+| `pnpm typecheck`    | génère les types de routes puis vérifie TypeScript |
+| `pnpm lint`         | ESLint                                             |
+| `pnpm format`       | Prettier (écriture)                                |
+| `pnpm test`         | tests unitaires Vitest                             |
+| `pnpm test:e2e`     | tests Playwright (desktop + mobile 375 px)         |
+| `pnpm db:up`/`down` | démarre / arrête DynamoDB Local                    |
+| `pnpm db:create`    | crée les tables DynamoDB Local                     |
+| `pnpm db:seed`      | insère les données initiales                       |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Variables d'environnement
 
-## Learn More
+| Variable                | Défaut      | Rôle                                                 |
+| ----------------------- | ----------- | ---------------------------------------------------- |
+| `AWS_REGION`            | `eu-west-3` | région AWS                                           |
+| `DYNAMODB_ENDPOINT`     | —           | `http://localhost:8000` en local, vide en production |
+| `DYNAMODB_TABLE_PREFIX` | `tynoc-`    | préfixe des noms de tables                           |
 
-To learn more about Next.js, take a look at the following resources:
+Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts). Aucun secret AWS n'est committé ; en production l'accès passe par un rôle IAM (OIDC).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```text
+src/
+├── app/            routes (App Router)
+├── components/     ui/ (primitives Radix), admin/ (layout), feedback/
+├── lib/            env, erreurs, client DynamoDB, utilitaires
+scripts/            création des tables et seed DynamoDB Local
+tests/e2e/          tests Playwright
+```
 
-## Deploy on Vercel
+## Note Windows
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`pnpm-workspace.yaml` utilise `nodeLinker: hoisted` : la disposition isolée de pnpm provoquait des erreurs `EPERM` lors du renommage de paquets natifs sous Windows.

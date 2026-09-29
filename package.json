@@ -13,6 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "ci:local": "node scripts/ci-local.mjs",
+    "prepare": "git config core.hooksPath .githooks || true",
     "db:up": "docker compose up -d dynamodb",
     "db:down": "docker compose down",
     "db:create": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/create-tables.ts",

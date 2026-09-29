@@ -41,9 +41,16 @@ pnpm dev          # http://localhost:3000
 | `pnpm format`       | Prettier (écriture)                                |
 | `pnpm test`         | tests unitaires Vitest                             |
 | `pnpm test:e2e`     | tests Playwright (desktop + mobile 375 px)         |
+| `pnpm ci:local`     | CI complète en local (`--quick` : sans build/E2E)  |
 | `pnpm db:up`/`down` | démarre / arrête DynamoDB Local                    |
 | `pnpm db:create`    | crée les tables DynamoDB Local                     |
 | `pnpm db:seed`      | insère les données initiales                       |
+
+## CI locale
+
+GitHub Actions n'étant pas disponible sur ce compte, la CI tourne en local : `pnpm install` active le hook `.githooks/pre-push`, qui exécute `pnpm ci:local` (format, types, lint, tests unitaires, build, E2E) avant chaque push. Le workflow `.github/workflows/ci.yml` reste prêt si Actions redevient disponible.
+
+Tester un déploiement : `E2E_BASE_URL=https://tynoc-dashboard.vercel.app pnpm test:e2e`.
 
 ## Variables d'environnement
 

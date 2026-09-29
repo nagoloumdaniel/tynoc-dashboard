@@ -20,7 +20,8 @@
     "db:down": "docker compose down",
     "db:create": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/create-tables.ts",
     "db:seed": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/seed.ts",
-    "db:test:reset": "tsx --conditions=react-server scripts/reset-test-db.ts"
+    "db:test:reset": "tsx --conditions=react-server scripts/reset-test-db.ts",
+    "admin:create": "tsx --conditions=react-server --env-file-if-exists=.env.local scripts/create-admin.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.1141.0",

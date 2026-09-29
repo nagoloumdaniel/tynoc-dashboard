@@ -6,7 +6,7 @@ import { AUTH_STATE, TEST_USERS } from "./test-users";
 setup("log in as super admin", async ({ page }) => {
   await logIn(page, TEST_USERS.superAdmin);
   await expect(page).toHaveURL(/\/admin$/);
-  if (!IS_REMOTE) await expectLoggedIn(page, TEST_USERS.superAdmin.name);
+  await expectLoggedIn(page, TEST_USERS.superAdmin.name);
   await page.context().storageState({ path: AUTH_STATE.superAdmin });
 });
 

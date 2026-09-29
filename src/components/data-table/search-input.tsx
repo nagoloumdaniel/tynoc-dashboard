@@ -21,9 +21,14 @@ export function SearchInput({
   const { params, setFilters } = useUrlFilters();
   const current = params.get(param) ?? "";
   const [value, setValue] = useState(current);
+  const [syncedWith, setSyncedWith] = useState(current);
 
-  // Follow external changes (reset button, back navigation).
-  useEffect(() => setValue(current), [current]);
+  // Follow external changes (reset button, back navigation) during render,
+  // as React recommends, rather than in an effect.
+  if (current !== syncedWith) {
+    setSyncedWith(current);
+    setValue(current);
+  }
 
   useEffect(() => {
     if (value.trim() === current.trim()) return;

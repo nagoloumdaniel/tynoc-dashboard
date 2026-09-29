@@ -4,7 +4,6 @@ import { AlertDialog } from "radix-ui";
 import { type ReactNode, useId, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/field";
-import type { ActionResult } from "@/lib/action-result";
 
 /**
  * Confirmation for destructive or impactful actions. Stays open with the
@@ -26,7 +25,7 @@ export function ConfirmDialog({
   confirmLabel: string;
   tone?: "danger" | "primary";
   confirmationText?: string;
-  onConfirm: () => Promise<ActionResult<unknown>>;
+  onConfirm: () => Promise<{ ok: true } | { ok: false; message: string }>;
 }) {
   const [open, setOpen] = useState(false);
   const [typed, setTyped] = useState("");

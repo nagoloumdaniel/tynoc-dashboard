@@ -4,28 +4,9 @@ import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { db, table } from "@/lib/aws/dynamodb";
 import type { TaggedItem } from "@/lib/aws/transaction";
 
-export type AuditAction =
-  | "LOGIN"
-  | "LOGOUT"
-  | "CREATE"
-  | "UPDATE"
-  | "ARCHIVE"
-  | "RESTORE"
-  | "ACTIVATE"
-  | "DEACTIVATE"
-  | "REACTIVATE"
-  | "PASSWORD_RESET"
-  | "PASSWORD_CHANGE"
-  | "ANONYMIZE"
-  | "REMOVE_ITEM"
-  | "EMPTY"
-  | "DELETE"
-  | "STOCK_ADJUST"
-  | "ROLE_CHANGE"
-  | "SUSPEND";
+import type { AuditAction, AuditEntityType } from "./actions";
 
-export type AuditEntityType =
-  "PRODUCT" | "CATEGORY" | "USER" | "CART" | "WISHLIST";
+export type { AuditAction, AuditEntityType };
 
 export type AuditEntry = {
   actorId: string;

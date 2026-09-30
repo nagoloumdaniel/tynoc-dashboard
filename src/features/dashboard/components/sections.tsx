@@ -1,12 +1,14 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { forReader } from "@/features/activity/privacy";
 import { listActivity } from "@/features/activity/service";
 import { formatDateTime } from "@/features/carts/components/shared";
 import { StockBadge } from "@/features/products/components/badges";
 import { ProductThumb } from "@/features/products/components/product-thumb";
 import { mainImageUrl } from "@/features/products/image-urls";
 import { AUDIT_ACTION_LABELS, auditEntityHref } from "@/lib/audit/actions";
+import type { AdminRole } from "@/lib/auth/permissions";
 import { maskEmail } from "@/lib/format";
 import type { Period } from "../period";
 import {
@@ -332,8 +334,17 @@ export async function LatestCustomersWidget({
   );
 }
 
-export async function RecentActivityWidget({ period }: { period: Period }) {
-  const { items } = await listActivity({ period }, undefined, WIDGET_ROWS);
+export async function RecentActivityWidget({
+  period,
+  role,
+}: {
+  period: Period;
+  role: AdminRole;
+}) {
+  const items = forReader(
+    (await listActivity({ period }, undefined, WIDGET_ROWS)).items,
+    role,
+  );
   return (
     <Widget
       title="Activité récente"

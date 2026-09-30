@@ -39,6 +39,7 @@ export default defineConfig({
             CRON_SECRET: "test-cron-secret-0123456789",
             S3_ENDPOINT: "http://localhost:9000",
             S3_BUCKET: "tynoc-test-images",
+            DEMO_ACCOUNT_EMAIL: "demo@test.tynoc.fr",
           },
         },
       },

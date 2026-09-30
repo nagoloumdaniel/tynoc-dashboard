@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ActivityFeed } from "@/features/activity/components/activity-feed";
 import { ActivityFilters } from "@/features/activity/components/activity-filters";
 import { activityQuerySchema } from "@/features/activity/schemas";
+import { forReader } from "@/features/activity/privacy";
 import { listActivity, listActors } from "@/features/activity/service";
 import { requireAdmin } from "@/lib/auth/dal";
 
@@ -15,9 +16,17 @@ export const metadata: Metadata = { title: "Activité" };
 export default async function ActivityPage({
   searchParams,
 }: PageProps<"/admin/activity">) {
-  await requireAdmin();
-  const query = activityQuerySchema.parse(await searchParams);
-  const [page, actors] = await Promise.all([listActivity(query), listActors()]);
+  const session = await requireAdmin();
+  const reader = session.role === "VIEWER";
+  const parsed = activityQuerySchema.parse(await searchParams);
+  // Read-only admins get neither the author list nor the author filter:
+  // it would reveal the admins' addresses.
+  const query = reader ? { ...parsed, actor: undefined } : parsed;
+  const [result, actors] = await Promise.all([
+    listActivity(query),
+    reader ? [] : listActors(),
+  ]);
+  const page = { ...result, items: forReader(result.items, session.role) };
 
   // Only validated values travel back to the "Voir plus" action.
   const params = {
@@ -37,7 +46,7 @@ export default async function ActivityPage({
         title="Activité"
         description="Historique des actions effectuées par les administrateurs, du plus récent au plus ancien."
       />
-      <ActivityFilters query={query} actors={actors} />
+      <ActivityFilters query={query} actors={actors} showActor={!reader} />
 
       {page.items.length > 0 ? (
         <ActivityFeed

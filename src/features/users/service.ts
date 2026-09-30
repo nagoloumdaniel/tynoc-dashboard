@@ -16,6 +16,7 @@ import {
   userAnonymized,
 } from "@/features/notifications/events";
 import { notificationOp } from "@/features/notifications/repository";
+import { isDemoAccount } from "@/lib/auth/demo";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { can, isAdminRole } from "@/lib/auth/permissions";
 import type { Session } from "@/lib/auth/session";
@@ -315,6 +316,13 @@ export async function changeOwnPassword(
   session: Session,
   input: { current: string; next: string },
 ): Promise<AuthUser> {
+  if (isDemoAccount(session.email)) {
+    throw new AppError(
+      "DEMO_ACCOUNT",
+      403,
+      "Le mot de passe du compte de démonstration ne peut pas être changé.",
+    );
+  }
   const before = await findUserById(session.userId);
   if (
     !before?.passwordHash ||

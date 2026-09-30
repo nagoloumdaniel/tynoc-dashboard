@@ -16,9 +16,11 @@ import type { ActivityQuery } from "../schemas";
 export function ActivityFilters({
   query,
   actors,
+  showActor = true,
 }: {
   query: ActivityQuery;
   actors: { email: string; name: string }[];
+  showActor?: boolean;
 }) {
   const { setFilters, pending } = useUrlFilters();
   const filtered =
@@ -72,21 +74,23 @@ export function ActivityFilters({
           })),
         ]}
       />
-      <Select
-        aria-label="Auteur"
-        value={query.actor ?? ""}
-        onValueChange={(value) => setFilters({ actor: value || undefined })}
-        options={[
-          { value: "", label: "Tous les auteurs" },
-          ...actorOptions.map((actor) => ({
-            value: actor.email,
-            label:
-              actor.name === actor.email
-                ? actor.email
-                : `${actor.name} (${actor.email})`,
-          })),
-        ]}
-      />
+      {showActor ? (
+        <Select
+          aria-label="Auteur"
+          value={query.actor ?? ""}
+          onValueChange={(value) => setFilters({ actor: value || undefined })}
+          options={[
+            { value: "", label: "Tous les auteurs" },
+            ...actorOptions.map((actor) => ({
+              value: actor.email,
+              label:
+                actor.name === actor.email
+                  ? actor.email
+                  : `${actor.name} (${actor.email})`,
+            })),
+          ]}
+        />
+      ) : null}
       {filtered ? (
         <Button
           variant="ghost"

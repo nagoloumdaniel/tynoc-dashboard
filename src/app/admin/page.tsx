@@ -61,7 +61,7 @@ export default async function DashboardPage({
         </WidgetBoundary>
         <WidgetBoundary title="Activité récente">
           <Suspense fallback={<WidgetSkeleton />}>
-            <RecentActivityWidget period={period} />
+            <RecentActivityWidget period={period} role={session.role} />
           </Suspense>
         </WidgetBoundary>
         <WidgetBoundary title="Derniers produits">

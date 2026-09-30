@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { s3PublicBaseUrl } from "./src/lib/aws/s3-public-url";
+import { securityHeaders } from "./src/lib/security-headers";
 
 // Product images live in S3 (RustFS locally). Evaluated at build time.
 const bucket = process.env.S3_BUCKET;
@@ -35,6 +36,17 @@ const nextConfig: NextConfig = {
       : [],
     // Only the local RustFS container is on a private IP; never in production.
     dangerouslyAllowLocalIP: !!endpoint,
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders({
+          dev: process.env.NODE_ENV === "development",
+          imagesOrigin: imagesOrigin?.origin ?? null,
+        }),
+      },
+    ];
   },
 };
 

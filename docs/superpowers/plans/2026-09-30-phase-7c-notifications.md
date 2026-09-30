@@ -32,4 +32,4 @@ Décisions :
 
 ### Tâche 5 : production, E2E, documentation, PR
 
-- [ ] Table sur AWS (`pnpm db:create -- --aws`), droits du rôle, `tests/e2e/notifications.spec.ts`, README ; PR « Phase 7c — Notifications ».
+- [x] Table sur AWS (`pnpm db:create -- --aws`), droits du rôle, `tests/e2e/notifications.spec.ts`, README ; PR « Phase 7c — Notifications ».

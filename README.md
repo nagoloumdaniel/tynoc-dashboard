@@ -14,7 +14,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 - [x] Phase 4 — Catégories
 - [x] Phase 5 — Utilisateurs
 - [x] Phase 6 — Paniers et wishlists
-- [ ] Phase 7 — Dashboard et activité (7a tableau de bord et 7b images S3 faits ; 7c notifications à venir)
+- [x] Phase 7 — Tableau de bord, activité, images S3, notifications
 - [ ] Phase 8 — Durcissement et livraison
 
 ## Installation locale
@@ -78,6 +78,13 @@ Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts).
 - Création, fiche, modification, ajustement de stock avec raison, archivage / restauration (en brouillon), suppression définitive réservée au super administrateur et refusée si le produit est dans un panier ou une wishlist.
 - Montants en centimes ; SKU et slug uniques ; verrouillage optimiste (`version`) ; chaque écriture met à jour les compteurs du tableau de bord et le journal d'activité dans la même transaction DynamoDB.
 - **Limite connue :** la liste charge le catalogue via l'index `byStatus` puis filtre en mémoire, adapté à quelques milliers de produits. Au-delà (~5 000), prévoir un moteur de recherche (OpenSearch, Meilisearch).
+
+## Notifications
+
+- Cloche dans la barre du haut : badge des non-lues, 20 dernières notifications, « Tout marquer comme lu ». Rafraîchie toutes les 15 s et au retour sur l'onglet ; les notifications importantes s'affichent aussi en toast.
+- Événements : stock qui se dégrade (stock faible, rupture — importante) ; suppression définitive d'un produit, anonymisation, changement de rôle, création d'administrateur (l'auteur ne reçoit pas sa propre action) ; email bloqué après 5 échecs de connexion (important, email masqué).
+- Chaque notification est écrite **dans la transaction** de l'action qui la provoque : une action annulée ne notifie rien. Table `Notifications` (index `byFeed`, conservation 30 jours par TTL) ; la position de lecture est `Users.notificationsReadAt`.
+- Lecture : `GET /api/notifications?since=<ISO>` (JSON, 401 sans session valide).
 
 ## Images produits
 

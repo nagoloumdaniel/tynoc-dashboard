@@ -20,7 +20,7 @@ Décisions :
 
 ### Tâche 2 : données et écriture
 
-- [ ] Table + index + TTL, dépôt (opération de transaction, lecture, non-lues, lu), branchement produits / utilisateurs / anti force brute + tests d'intégration ; commit `feat(notifications): record notifications`.
+- [x] Table + index + TTL, dépôt (opération de transaction, lecture, non-lues, lu), branchement produits / utilisateurs / anti force brute + tests d'intégration ; commit `feat(notifications): record notifications`.
 
 ### Tâche 3 : lecture
 

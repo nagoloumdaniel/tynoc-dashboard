@@ -126,6 +126,12 @@ export const TABLES = {
     AttributeDefinitions: [s("pk")],
     KeySchema: [hash("pk")],
   },
+  // Every notification carries feed = "NOTIF": newest first without a Scan.
+  Notifications: {
+    AttributeDefinitions: [s("id"), s("feed"), s("createdAt")],
+    KeySchema: [hash("id")],
+    GlobalSecondaryIndexes: [gsi("byFeed", "feed", "createdAt")],
+  },
 } satisfies Record<string, TableDefinition>;
 
 export type TableKey = keyof typeof TABLES;
@@ -134,6 +140,7 @@ export type TableKey = keyof typeof TABLES;
 export const TTL_ATTRIBUTES: Partial<Record<TableKey, string>> = {
   Sessions: "expiresAt",
   RateLimits: "expiresAt",
+  Notifications: "expiresAt",
 };
 
 export function tableName(table: TableKey, prefix: string): string {

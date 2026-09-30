@@ -2,6 +2,11 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { isCategoryUsable } from "@/features/categories/service";
 import {
+  productDeleted,
+  stockNotification,
+} from "@/features/notifications/events";
+import { notificationOp } from "@/features/notifications/repository";
+import {
   type AuditAction,
   auditOp,
   queryEntityActivity,
@@ -120,17 +125,22 @@ export async function loadForChange(id: string, expectedVersion: number) {
   return product;
 }
 
-/** Saves a new version of a product with its counters and audit entry.
- * Shared with image-service.ts, like loadForChange and audit. */
+/**
+ * Saves a new version of a product with its counters, audit entry and, when
+ * the stock level gets worse, a notification. Shared with image-service.ts,
+ * like loadForChange and audit.
+ */
 export async function saveVersion(
   before: Product,
   after: Product,
   extra: TaggedItem[],
 ): Promise<Product> {
+  const alert = stockNotification(before, after);
   await run([
     putProductOp(after, before.version),
     ...extra,
     ...statsOps(statsDelta(before, after)),
+    ...(alert ? [notificationOp(alert)] : []),
   ]);
   return after;
 }
@@ -372,6 +382,7 @@ export async function deleteProduct(actor: Actor, id: string): Promise<void> {
       product,
       `Suppression définitive de « ${product.name} » (${product.sku}, ${formatPrice(product.priceInCents)})`,
     ),
+    notificationOp(productDeleted(actor, product)),
   ]);
   await deleteImageFiles(product.id, product.imageKeys);
 }

@@ -43,11 +43,12 @@ export async function checkLoginAllowed(
   return !emailBlocked && !ipBlocked;
 }
 
-async function increment(pk: string, now: number): Promise<void> {
+/** Returns the failures counted in the current window, this one included. */
+async function increment(pk: string, now: number): Promise<number> {
   const windowEnd = now + LOGIN_WINDOW_S;
   try {
     // Fixed window: the first failure sets the end, later ones only count.
-    await db().send(
+    const { Attributes } = await db().send(
       new UpdateCommand({
         TableName: table("RateLimits"),
         Key: { pk },
@@ -60,8 +61,10 @@ async function increment(pk: string, now: number): Promise<void> {
           ":windowEnd": windowEnd,
           ":now": now,
         },
+        ReturnValues: "UPDATED_NEW",
       }),
     );
+    return Number(Attributes?.count ?? 1);
   } catch (error) {
     if (!isConditionFailure(error)) throw error;
     // The previous window has ended: start a new one.
@@ -71,18 +74,24 @@ async function increment(pk: string, now: number): Promise<void> {
         Item: { pk, count: 1, expiresAt: windowEnd },
       }),
     );
+    return 1;
   }
 }
 
+/**
+ * Counts a failure for the email and the IP. `emailBlocked` is true only for
+ * the failure that blocks the email, so the caller can report it once.
+ */
 export async function recordLoginFailure(
   email: string,
   ip: string,
-): Promise<void> {
+): Promise<{ emailBlocked: boolean }> {
   const now = nowInSeconds();
-  await Promise.all([
+  const [emailFailures] = await Promise.all([
     increment(emailKey(email), now),
     increment(ipKey(ip), now),
   ]);
+  return { emailBlocked: emailFailures === MAX_LOGIN_FAILURES };
 }
 
 export async function clearLoginFailures(email: string): Promise<void> {

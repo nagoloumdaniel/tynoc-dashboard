@@ -10,6 +10,12 @@ import {
   TransactionConditionError,
 } from "@/lib/aws/transaction";
 import type { AuthUser } from "@/features/auth/service";
+import {
+  adminCreated,
+  roleChanged,
+  userAnonymized,
+} from "@/features/notifications/events";
+import { notificationOp } from "@/features/notifications/repository";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { can, isAdminRole } from "@/lib/auth/permissions";
 import type { Session } from "@/lib/auth/session";
@@ -235,6 +241,7 @@ export async function changeUserRole(
     audit(actor, "ROLE_CHANGE", after, `Rôle de ${after.name} modifié`, {
       role: { from: before.role, to: role },
     }),
+    notificationOp(roleChanged(actor, after, before.role, role)),
   ]);
   await deleteUserSessions(id);
   return { user: after, temporaryPassword };
@@ -268,6 +275,7 @@ export async function createAdmin(
           role: { from: null, to: created.role },
         },
       ),
+      notificationOp(adminCreated(actor, created)),
     ],
   );
   return { user, temporaryPassword };
@@ -364,6 +372,7 @@ export async function anonymizeUser(
     releaseEmailOp(before.email),
     usersCounterOp(-1),
     audit(actor, "ANONYMIZE", after, "Anonymisation du compte (RGPD)"),
+    notificationOp(userAnonymized(actor, after)),
   ]);
   await Promise.all([deleteUserSessions(id), deleteUserItems(id)]);
 }

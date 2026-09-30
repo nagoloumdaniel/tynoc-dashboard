@@ -12,6 +12,7 @@ describe("tableName", () => {
         "AuditLogs",
         "Carts",
         "Categories",
+        "Notifications",
         "Products",
         "RateLimits",
         "Sessions",
@@ -23,10 +24,11 @@ describe("tableName", () => {
     );
   });
 
-  it("expires sessions and rate limits through DynamoDB TTL", () => {
+  it("expires sessions, rate limits and notifications through DynamoDB TTL", () => {
     expect(TTL_ATTRIBUTES).toEqual({
       Sessions: "expiresAt",
       RateLimits: "expiresAt",
+      Notifications: "expiresAt",
     });
   });
 });

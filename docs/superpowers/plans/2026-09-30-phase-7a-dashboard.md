@@ -24,7 +24,7 @@ Contraintes : TDD, `requireAdmin`, CI locale avant chaque push ; Recharts ajout�
 
 ### Tâche 5 : journal d'activité
 
-- [ ] Page `/admin/activity` : filtres, « Voir plus », détails dépliables ; commit `feat(activity): add activity log page`.
+- [x] Page `/admin/activity` : filtres, « Voir plus », détails dépliables ; commit `feat(activity): add activity log page`.
 
 ### Tâche 6 : mode sombre
 

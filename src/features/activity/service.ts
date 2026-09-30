@@ -1,6 +1,7 @@
 import "server-only";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import type { AuditAction, AuditEntityType } from "@/lib/audit/actions";
+import { ADMIN_ROLES } from "@/lib/auth/permissions";
 import { db, table } from "@/lib/aws/dynamodb";
 import { periodRanges } from "@/features/dashboard/period";
 import { decodeCursor, encodeCursor } from "./cursor";
@@ -18,6 +19,30 @@ export type ActivityItem = {
 };
 
 type Row = ActivityItem & { pk: string; sk: string; feed: string };
+
+/** Everyone who can write to the log, for the author filter. */
+export async function listActors(): Promise<{ email: string; name: string }[]> {
+  const actors: { email: string; name: string }[] = [];
+  for (const role of ADMIN_ROLES) {
+    let startKey: Record<string, unknown> | undefined;
+    do {
+      const page = await db().send(
+        new QueryCommand({
+          TableName: table("Users"),
+          IndexName: "byRole",
+          KeyConditionExpression: "#role = :role",
+          ExpressionAttributeNames: { "#role": "role", "#name": "name" },
+          ExpressionAttributeValues: { ":role": role },
+          ProjectionExpression: "email, #name",
+          ExclusiveStartKey: startKey,
+        }),
+      );
+      actors.push(...((page.Items ?? []) as { email: string; name: string }[]));
+      startKey = page.LastEvaluatedKey;
+    } while (startKey);
+  }
+  return actors.sort((a, b) => a.email.localeCompare(b.email));
+}
 
 export const ACTIVITY_PAGE_SIZE = 25;
 // A filter may discard most rows of a DynamoDB page: bound the reads.

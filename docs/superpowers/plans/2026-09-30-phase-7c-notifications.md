@@ -28,7 +28,7 @@ Décisions :
 
 ### Tâche 4 : interface
 
-- [ ] Cloche, liste, badge, interrogation, toasts ; commit `feat(notifications): add notification bell`.
+- [x] Cloche, liste, badge, interrogation, toasts ; commit `feat(notifications): add notification bell`.
 
 ### Tâche 5 : production, E2E, documentation, PR
 

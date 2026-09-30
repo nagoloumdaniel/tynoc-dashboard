@@ -1,3 +1,4 @@
+import { NotificationBell } from "@/features/notifications/components/notification-bell";
 import type { Session } from "@/lib/auth/session";
 import { AccountMenu } from "./account-menu";
 import { MobileNav } from "./mobile-nav";
@@ -9,7 +10,8 @@ export function Topbar({ session }: { session: Session }) {
       <span className="font-semibold tracking-tight lg:hidden">
         Tynoc Admin
       </span>
-      <div className="ml-auto">
+      <div className="ml-auto flex items-center gap-1">
+        <NotificationBell />
         <AccountMenu
           name={session.name}
           email={session.email}

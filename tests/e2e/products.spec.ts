@@ -28,6 +28,8 @@ async function createViaForm(
 test("creates, finds, edits, restocks, archives and deletes a product", async ({
   page,
 }) => {
+  // Six server actions in a row: allow three times the default timeout.
+  test.slow();
   const product = uniqueProduct();
 
   // Create: the slug follows the name.

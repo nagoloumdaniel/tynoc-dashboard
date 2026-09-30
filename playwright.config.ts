@@ -19,6 +19,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // The local CI runs every worker, DynamoDB Local, S3 and scrypt on one
+  // machine: server round-trips can exceed the default 5 s under load.
+  expect: { timeout: process.env.CI ? 10_000 : 5_000 },
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   globalSetup: REMOTE_URL ? undefined : "./tests/e2e/global-setup.ts",
   use: {

@@ -65,7 +65,7 @@ export async function readProducts(
     [...new Set(ids)].map((id) => ({ id })),
     {
       expression:
-        "id, #name, sku, priceInCents, salePriceInCents, stock, #status",
+        "id, #name, sku, priceInCents, salePriceInCents, stock, #status, imageKeys",
       names: { "#name": "name", "#status": "status" },
     },
   );

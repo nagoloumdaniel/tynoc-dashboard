@@ -33,6 +33,7 @@ export const LIST_FIELDS = [
   "salePriceInCents",
   "stock",
   "lowStockThreshold",
+  "imageKeys",
   "status",
   "createdAt",
   "version",

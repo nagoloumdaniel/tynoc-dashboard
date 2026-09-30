@@ -28,7 +28,7 @@ Décisions :
 
 ### Tâche 4 : interface
 
-- [ ] Galerie sur la fiche produit (aperçu, progression, principale, ordre, suppression), miniatures dans la liste produits, paniers, wishlists et le tableau de bord ; commit `feat(images): add product gallery and thumbnails`.
+- [x] Galerie sur la fiche produit (aperçu, progression, principale, ordre, suppression), miniatures dans la liste produits, paniers, wishlists et le tableau de bord ; commit `feat(images): add product gallery and thumbnails`.
 
 ### Tâche 5 : production
 

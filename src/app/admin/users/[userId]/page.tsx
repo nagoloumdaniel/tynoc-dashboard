@@ -116,7 +116,7 @@ export default async function UserPage({
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <section className="rounded-lg border bg-surface p-5">
             <h2 className="mb-4 text-base font-semibold">Informations</h2>

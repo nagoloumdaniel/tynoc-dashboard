@@ -13,6 +13,8 @@ import {
 } from "@/features/carts/components/shared";
 import { getWishlist } from "@/features/carts/service";
 import { unitPrice } from "@/features/carts/summary";
+import { ProductThumb } from "@/features/products/components/product-thumb";
+import { mainImageUrl } from "@/features/products/image-urls";
 import { requireAdmin } from "@/lib/auth/dal";
 import { can } from "@/lib/auth/permissions";
 import { formatPrice } from "@/lib/format";
@@ -32,16 +34,19 @@ export default async function WishlistPage({
 
   const productCell = ({ line, product }: Item) =>
     product ? (
-      <div className="min-w-0">
-        <Link
-          href={`/admin/products/${product.id}`}
-          className="block truncate font-medium hover:underline"
-        >
-          {product.name}
-        </Link>
-        <span className="font-mono text-xs text-muted-foreground">
-          {product.sku}
-        </span>
+      <div className="flex min-w-0 items-center gap-3">
+        <ProductThumb src={mainImageUrl(product)} />
+        <div className="min-w-0">
+          <Link
+            href={`/admin/products/${product.id}`}
+            className="block truncate font-medium hover:underline"
+          >
+            {product.name}
+          </Link>
+          <span className="font-mono text-xs text-muted-foreground">
+            {product.sku}
+          </span>
+        </div>
       </div>
     ) : (
       <span className="text-muted-foreground">{line.productId}</span>

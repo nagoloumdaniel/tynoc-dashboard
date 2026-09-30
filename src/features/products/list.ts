@@ -41,13 +41,14 @@ function matches(
   item: ProductListItem,
   query: ProductListQuery,
   search: string,
+  categoryIds: Set<string> | null,
 ) {
   if (query.status === "current") {
     if (item.status === "ARCHIVED") return false;
   } else if (item.status !== query.status) {
     return false;
   }
-  if (query.category && item.categoryId !== query.category) return false;
+  if (categoryIds && !categoryIds.has(item.categoryId)) return false;
   if (query.stock && stockLevel(item) !== STOCK_FILTER[query.stock]) {
     return false;
   }
@@ -65,11 +66,21 @@ function matches(
 export function filterSortPaginate(
   items: ProductListItem[],
   query: ProductListQuery,
-  pageSize = PAGE_SIZE,
+  {
+    categoryIds,
+    pageSize = PAGE_SIZE,
+  }: {
+    /** A parent category stands for itself and its sub-categories. */
+    categoryIds?: string[];
+    pageSize?: number;
+  } = {},
 ): ProductPage {
   const search = normalizeText(query.q);
+  const categories = query.category
+    ? new Set(categoryIds ?? [query.category])
+    : null;
   const filtered = items
-    .filter((item) => matches(item, query, search))
+    .filter((item) => matches(item, query, search, categories))
     .sort(comparator(query.sort));
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));

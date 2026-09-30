@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { findCategory } from "@/features/categories/repository";
-import type { AuditAction } from "@/lib/audit/audit-log";
+import { isCategoryUsable } from "@/features/categories/service";
+import { type AuditAction, auditOp } from "@/lib/audit/audit-log";
 import { table } from "@/lib/aws/dynamodb";
 import {
   type TaggedItem,
@@ -13,7 +13,6 @@ import { AppError, conflict, notFound } from "@/lib/errors";
 import { formatPrice, normalizeText } from "@/lib/format";
 import { filterSortPaginate, type ProductPage } from "./list";
 import {
-  auditOp,
   countProductUsage,
   findProduct,
   queryProductActivity,
@@ -50,8 +49,8 @@ const productNotFound = () =>
   notFound("PRODUCT_NOT_FOUND", "Le produit demandé est introuvable.");
 
 async function assertCategoryUsable(categoryId: string) {
-  const category = await findCategory(categoryId);
-  if (!category?.isActive) {
+  // Active, and its parent too when it is a sub-category.
+  if (!(await isCategoryUsable(categoryId))) {
     throw new AppError(
       "CATEGORY_INVALID",
       400,
@@ -137,11 +136,12 @@ export const getProduct = findProduct;
 
 export async function listProducts(
   query: ProductListQuery,
+  options: { categoryIds?: string[] } = {},
 ): Promise<ProductPage> {
   const statuses: ProductStatus[] =
     query.status === "current" ? ["ACTIVE", "DRAFT"] : [query.status];
   const items = (await Promise.all(statuses.map(queryProductsByStatus))).flat();
-  return filterSortPaginate(items, query);
+  return filterSortPaginate(items, query, options);
 }
 
 export const getProductUsage = countProductUsage;

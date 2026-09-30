@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/admin/page-header";
-import { listActiveCategories } from "@/features/categories/repository";
+import { listUsableCategoryOptions } from "@/features/categories/service";
 import { ProductForm } from "@/features/products/components/product-form";
 import { requireAdmin } from "@/lib/auth/dal";
 
@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Nouveau produit" };
 
 export default async function NewProductPage() {
   await requireAdmin("products:write");
-  const categories = await listActiveCategories();
+  const categories = await listUsableCategoryOptions();
 
   return (
     <>
@@ -18,7 +18,7 @@ export default async function NewProductPage() {
       />
       <ProductForm
         mode="create"
-        categories={categories.map(({ id, name }) => ({ id, name }))}
+        categories={categories}
         initial={{
           name: "",
           slug: "",

@@ -40,7 +40,7 @@ export function ProductForm({
   product,
 }: {
   mode: "create" | "edit";
-  categories: { id: string; name: string }[];
+  categories: { id: string; label: string }[];
   initial: ProductFormValues;
   product?: { id: string; version: number; stock: number };
 }) {
@@ -232,7 +232,7 @@ export function ProductForm({
                   <option value="">Choisir…</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
-                      {category.name}
+                      {category.label}
                     </option>
                   ))}
                 </Select>

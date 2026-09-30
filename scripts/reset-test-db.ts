@@ -1,11 +1,10 @@
 import { TEST_USERS } from "../tests/e2e/test-users";
-import { createCategory } from "../src/features/categories/repository";
-import { SEED_CATEGORIES } from "../src/features/categories/types";
 import { createUser } from "../src/features/users/repository";
 import { createDynamoClient } from "../src/lib/aws/client";
 import { hashPassword } from "../src/lib/auth/password";
 import { run } from "./lib/cli";
 import { dropTables, ensureTables } from "./lib/ensure-tables";
+import { seedCategories } from "./lib/seed-categories";
 
 const TEST_ENDPOINT = "http://localhost:8000";
 const TEST_PREFIX = "tynoc-test-";
@@ -23,9 +22,7 @@ run(async () => {
   await dropTables(client, TEST_PREFIX);
   await ensureTables(client, TEST_PREFIX, () => {});
 
-  for (const [index, category] of SEED_CATEGORIES.entries()) {
-    await createCategory({ ...category, sortOrder: (index + 1) * 10 });
-  }
+  await seedCategories(() => {});
 
   for (const user of Object.values(TEST_USERS)) {
     await createUser({

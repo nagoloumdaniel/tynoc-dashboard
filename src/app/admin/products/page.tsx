@@ -5,7 +5,12 @@ import { PageHeader } from "@/components/admin/page-header";
 import { Pagination } from "@/components/data-table/pagination";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { Button } from "@/components/ui/button";
-import { listActiveCategories } from "@/features/categories/repository";
+import { listCategoryTree } from "@/features/categories/service";
+import {
+  categoryLabels,
+  categoryOptions,
+  expandCategory,
+} from "@/features/categories/tree";
 import { ProductFilters } from "@/features/products/components/product-filters";
 import { ProductTable } from "@/features/products/components/product-table";
 import { PAGE_SIZE } from "@/features/products/list";
@@ -21,13 +26,15 @@ export default async function ProductsPage({
 }: PageProps<"/admin/products">) {
   const session = await requireAdmin();
   const query = productListQuerySchema.parse(await searchParams);
-  const [result, categories] = await Promise.all([
-    listProducts(query),
-    listActiveCategories(),
-  ]);
+  const tree = await listCategoryTree();
+  const result = await listProducts(query, {
+    categoryIds: query.category
+      ? expandCategory(tree, query.category)
+      : undefined,
+  });
 
   const canWrite = can(session.role, "products:write");
-  const categoryNames = new Map(categories.map((c) => [c.id, c.name]));
+  const categoryNames = categoryLabels(tree);
   const hasFilters =
     query.q !== "" || query.category !== undefined || query.stock !== undefined;
 
@@ -50,7 +57,7 @@ export default async function ProductsPage({
 
       <ProductFilters
         query={query}
-        categories={categories.map(({ id, name }) => ({ id, name }))}
+        categories={categoryOptions(tree, { usableOnly: false })}
       />
 
       {result.total > 0 ? (

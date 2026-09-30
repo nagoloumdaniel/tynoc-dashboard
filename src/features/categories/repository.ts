@@ -1,22 +1,28 @@
 import "server-only";
 import {
+  BatchGetCommand,
   GetCommand,
   QueryCommand,
-  TransactWriteCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { db, table } from "@/lib/aws/dynamodb";
-import { failedTransactionItems } from "@/lib/aws/errors";
-import { conflict } from "@/lib/errors";
 import { type Category, ROOT_PARENT } from "./types";
+
+export const categorySlugKey = (slug: string) => `CATEGORY_SLUG#${slug}`;
+export const categoryStatsKey = (id: string) => `CATEGORY#${id}`;
 
 export async function findCategory(id: string): Promise<Category | null> {
   const { Item } = await db().send(
-    new GetCommand({ TableName: table("Categories"), Key: { id } }),
+    new GetCommand({
+      TableName: table("Categories"),
+      Key: { id },
+      ConsistentRead: true,
+    }),
   );
   return (Item as Category | undefined) ?? null;
 }
 
-export async function listActiveCategories(): Promise<Category[]> {
+/** Categories with the given parent, via the byParent index. */
+export async function queryChildren(parentId: string): Promise<Category[]> {
   const items: Category[] = [];
   let startKey: Record<string, unknown> | undefined;
   do {
@@ -24,9 +30,8 @@ export async function listActiveCategories(): Promise<Category[]> {
       new QueryCommand({
         TableName: table("Categories"),
         IndexName: "byParent",
-        KeyConditionExpression: "parentId = :root",
-        FilterExpression: "isActive = :active",
-        ExpressionAttributeValues: { ":root": ROOT_PARENT, ":active": true },
+        KeyConditionExpression: "parentId = :parent",
+        ExpressionAttributeValues: { ":parent": parentId },
         ExclusiveStartKey: startKey,
       }),
     );
@@ -36,66 +41,66 @@ export async function listActiveCategories(): Promise<Category[]> {
   return items;
 }
 
-/** Top-level category; the management screen and sub-categories come in phase 4. */
-export async function createCategory(input: {
-  name: string;
-  slug: string;
-  sortOrder: number;
-  isActive?: boolean;
-}): Promise<Category> {
-  const now = new Date().toISOString();
-  const category: Category = {
-    id: `cat_${input.slug}`,
-    name: input.name,
-    slug: input.slug,
-    parentId: ROOT_PARENT,
-    sortOrder: input.sortOrder,
-    isActive: input.isActive ?? true,
-    createdAt: now,
-    updatedAt: now,
-  };
+/** Every category: top-level ones, then their children in parallel. */
+export async function queryAllCategories(): Promise<Category[]> {
+  const roots = await queryChildren(ROOT_PARENT);
+  const children = await Promise.all(
+    roots.map((root) => queryChildren(root.id)),
+  );
+  return [...roots, ...children.flat()];
+}
 
-  try {
-    await db().send(
-      new TransactWriteCommand({
-        TransactItems: [
-          {
-            Put: {
-              TableName: table("Categories"),
-              Item: category,
-              ConditionExpression: "attribute_not_exists(id)",
-            },
-          },
-          {
-            Put: {
-              TableName: table("Uniques"),
-              Item: {
-                pk: `CATEGORY_SLUG#${category.slug}`,
-                categoryId: category.id,
-              },
-              ConditionExpression: "attribute_not_exists(pk)",
-            },
-          },
-          {
-            Update: {
-              TableName: table("Stats"),
-              Key: { pk: "GLOBAL" },
-              UpdateExpression: "ADD totalCategories :one",
-              ExpressionAttributeValues: { ":one": 1 },
-            },
-          },
-        ],
+/** Products in a category, archived ones included (index byCategory). */
+export async function countCategoryProducts(
+  categoryId: string,
+): Promise<number> {
+  let count = 0;
+  let startKey: Record<string, unknown> | undefined;
+  do {
+    const page = await db().send(
+      new QueryCommand({
+        TableName: table("Products"),
+        IndexName: "byCategory",
+        KeyConditionExpression: "categoryId = :id",
+        ExpressionAttributeValues: { ":id": categoryId },
+        Select: "COUNT",
+        ExclusiveStartKey: startKey,
       }),
     );
-  } catch (error) {
-    const failed = failedTransactionItems(error);
-    if (failed.includes(0) || failed.includes(1)) {
-      throw conflict(
-        "CATEGORY_SLUG_TAKEN",
-        "Ce slug de catégorie est déjà utilisé.",
+    count += page.Count ?? 0;
+    startKey = page.LastEvaluatedKey;
+  } while (startKey);
+  return count;
+}
+
+/** productCount of each category from the dashboard counters. */
+export async function readCategoryCounts(
+  ids: string[],
+): Promise<Record<string, number>> {
+  const counts: Record<string, number> = {};
+  for (let i = 0; i < ids.length; i += 100) {
+    let keys: Record<string, unknown>[] | undefined = ids
+      .slice(i, i + 100)
+      .map((id) => ({ pk: categoryStatsKey(id) }));
+    // BatchGet may return part of the keys as unprocessed: retry them.
+    while (keys?.length) {
+      const result = await db().send(
+        new BatchGetCommand({
+          RequestItems: {
+            [table("Stats")]: {
+              Keys: keys,
+              ProjectionExpression: "pk, productCount",
+            },
+          },
+        }),
       );
+      for (const item of result.Responses?.[table("Stats")] ?? []) {
+        const id = String(item.pk).replace("CATEGORY#", "");
+        counts[id] = Number(item.productCount ?? 0);
+      }
+      keys = result.UnprocessedKeys?.[table("Stats")]?.Keys as
+        Record<string, unknown>[] | undefined;
     }
-    throw error;
   }
-  return category;
+  return counts;
 }

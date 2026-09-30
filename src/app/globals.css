@@ -10,16 +10,18 @@
   --surface-muted: #f1f5f9;
   --border: #e2e8f0;
   --foreground: #0f172a;
-  --muted-foreground: #64748b;
+  --muted-foreground: #475569;
   --primary: #4f46e5;
   --primary-hover: #4338ca;
   --primary-foreground: #ffffff;
   --ring: #6366f1;
-  --success: #16a34a;
-  --warning: #b45309;
-  --danger: #dc2626;
+  /* Status tones keep >= 4.5:1 as small text on their 10 % badge tint, even
+     on a hovered table row (checked by axe in tests/e2e/a11y.spec.ts). */
+  --success: #166534;
+  --warning: #92400e;
+  --danger: #b91c1c;
   --danger-foreground: #ffffff;
-  --info: #0284c7;
+  --info: #0369a1;
   /* Single-series charts; each mode's step is validated against its surface. */
   --chart-1: #4f46e5;
 

@@ -120,10 +120,21 @@ Les images sont envoyées directement par le navigateur via un POST présigné (
       "Effect": "Allow",
       "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
       "Resource": "arn:aws:s3:::tynoc-dashboard-images-<ACCOUNT_ID>/products/*"
+    },
+    {
+      "Sid": "ListProductImagesForCleanup",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::tynoc-dashboard-images-<ACCOUNT_ID>",
+      "Condition": {
+        "StringLike": { "s3:prefix": ["products/*", "products/"] }
+      }
     }
   ]
 }
 ```
+
+`s3:ListBucket` (limité au préfixe `products/`) sert au cron hebdomadaire `/api/cron/cleanup-images`, qui efface les fichiers envoyés mais jamais rattachés à un produit depuis plus de 24 h.
 
 Vérification : `https://<bucket>.s3.<REGION>.amazonaws.com/products/<fichier>` répond 200, toute autre clé et la racine du bucket répondent 403.
 

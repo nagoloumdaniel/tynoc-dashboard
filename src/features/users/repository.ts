@@ -68,10 +68,12 @@ export async function createUser(
     passwordHash?: string;
     phone?: string;
     mustChangePassword?: boolean;
+    /** Demo data only: spreads sign-ups over past days. */
+    createdAt?: string;
   },
   extraOps: (user: UserRecord) => TaggedItem[] = () => [],
 ): Promise<UserRecord> {
-  const now = new Date().toISOString();
+  const now = input.createdAt ?? new Date().toISOString();
   const user: UserRecord = {
     id: `usr_${randomUUID()}`,
     name: input.name.trim(),

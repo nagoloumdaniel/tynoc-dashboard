@@ -1,4 +1,5 @@
 import { NotificationBell } from "@/features/notifications/components/notification-bell";
+import { isDemoAccount } from "@/lib/auth/demo";
 import type { Session } from "@/lib/auth/session";
 import { AccountMenu } from "./account-menu";
 import { MobileNav } from "./mobile-nav";
@@ -16,6 +17,7 @@ export function Topbar({ session }: { session: Session }) {
           name={session.name}
           email={session.email}
           role={session.role}
+          canChangePassword={!isDemoAccount(session.email)}
         />
       </div>
     </header>

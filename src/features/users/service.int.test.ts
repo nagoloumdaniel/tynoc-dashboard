@@ -232,6 +232,26 @@ describe("user service", () => {
     ).toBe(true);
   });
 
+  it("never changes the shared demo account's password", async () => {
+    const me = await account("VIEWER", "Mot-de-passe-demo");
+    const demo: Session = {
+      ...admin,
+      userId: me.id,
+      role: "VIEWER",
+      email: process.env.DEMO_ACCOUNT_EMAIL!.toUpperCase(),
+    };
+    await expect(
+      changeOwnPassword(demo, {
+        current: "Mot-de-passe-demo",
+        next: "Nouveau-mot-de-passe",
+      }),
+    ).rejects.toMatchObject({ code: "DEMO_ACCOUNT", status: 403 });
+    const saved = (await getUserDetail(me.id))!.user;
+    expect(await verifyPassword("Mot-de-passe-demo", saved.passwordHash!)).toBe(
+      true,
+    );
+  });
+
   it("anonymises an account, empties its cart and frees its email", async () => {
     const user = await account();
     await db().send(

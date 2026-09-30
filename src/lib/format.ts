@@ -55,3 +55,10 @@ export function initials(name: string): string {
     .map((part) => part[0]?.toUpperCase())
     .join("");
 }
+
+const EMAIL_IN_TEXT = /[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[a-z]{2,}/gi;
+
+/** Masks every email address inside a text (sentences, summaries). */
+export function maskEmailsIn(text: string): string {
+  return text.replace(EMAIL_IN_TEXT, (email) => maskEmail(email));
+}

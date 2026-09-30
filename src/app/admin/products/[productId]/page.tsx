@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { forReader } from "@/features/activity/privacy";
 import { listCategoryLabels } from "@/features/categories/service";
 import {
   ProductStatusBadge,
@@ -74,12 +75,13 @@ export default async function ProductPage({
   const product = await getProduct(productId);
   if (!product) notFound();
 
-  const [labels, usage, activity] = await Promise.all([
+  const [labels, usage, history] = await Promise.all([
     listCategoryLabels(),
     getProductUsage(product.id),
     getProductActivity(product.id, 10),
   ]);
   const urls = imageUrls(product.imageKeys);
+  const activity = forReader(history, session.role);
 
   return (
     <>

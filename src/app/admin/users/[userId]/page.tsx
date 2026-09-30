@@ -9,6 +9,7 @@ import {
 } from "@/features/users/components/badges";
 import { UserActions } from "@/features/users/components/user-actions";
 import { canManageUser, type UserAction } from "@/features/users/policy";
+import { forReader } from "@/features/activity/privacy";
 import { getUserDetail } from "@/features/users/service";
 import { requireAdmin } from "@/lib/auth/dal";
 import { maskEmail } from "@/lib/format";
@@ -66,7 +67,8 @@ export default async function UserPage({
   const { userId } = await params;
   const detail = await getUserDetail(userId);
   if (!detail) notFound();
-  const { user, cartItems, wishlistItems, activity } = detail;
+  const { user, cartItems, wishlistItems } = detail;
+  const activity = forReader(detail.activity, session.role);
 
   const email = session.role === "VIEWER" ? maskEmail(user.email) : user.email;
   const allowed =

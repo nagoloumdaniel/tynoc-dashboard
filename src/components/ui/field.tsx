@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const control =
-  "block w-full rounded-md border bg-surface px-3 text-sm shadow-xs transition-colors placeholder:text-muted-foreground/70 disabled:cursor-not-allowed disabled:bg-surface-muted disabled:opacity-70 aria-invalid:border-danger";
+  "block w-full rounded-md border bg-surface px-3 text-sm shadow-xs transition-colors placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:bg-surface-muted disabled:opacity-70 aria-invalid:border-danger";
 
 export function Label({ className, ...props }: ComponentProps<"label">) {
   return (

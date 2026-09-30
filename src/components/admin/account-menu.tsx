@@ -23,10 +23,13 @@ export function AccountMenu({
   name,
   email,
   role,
+  canChangePassword = true,
 }: {
   name: string;
   email: string;
   role: AdminRole;
+  /** False for the shared demo account. */
+  canChangePassword?: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const { theme, setTheme } = useTheme();
@@ -70,12 +73,14 @@ export function AccountMenu({
           ))}
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/compte/mot-de-passe">
-            <KeyRoundIcon aria-hidden />
-            Changer mon mot de passe
-          </Link>
-        </DropdownMenuItem>
+        {canChangePassword ? (
+          <DropdownMenuItem asChild>
+            <Link href="/compte/mot-de-passe">
+              <KeyRoundIcon aria-hidden />
+              Changer mon mot de passe
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem
           disabled={pending}
           onSelect={() => startTransition(() => logout())}

@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import type { Session } from "@/lib/auth/session";
+import { maskEmailsIn } from "@/lib/format";
 import {
   countUnread,
   type NotificationItem,
@@ -31,7 +32,11 @@ export async function getNotificationFeed(
     readNotificationsReadAt(session.userId),
   ]);
   return {
-    items,
+    // Read-only admins (the public demo included) never see an address.
+    items:
+      session.role === "VIEWER"
+        ? items.map((n) => ({ ...n, body: maskEmailsIn(n.body) }))
+        : items,
     unread: await countUnread(session.userId, readAt),
     readAt: readAt ?? null,
   };

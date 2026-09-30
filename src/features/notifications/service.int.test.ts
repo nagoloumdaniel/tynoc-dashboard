@@ -36,6 +36,27 @@ beforeAll(async () => {
 });
 
 describe("getNotificationFeed", () => {
+  it("masks addresses for read-only admins only", async () => {
+    const marker = `${randomUUID().slice(0, 8)}.example.com`;
+    const before = new Date().toISOString();
+    await recordNotification({
+      type: "PRODUCT_DELETED",
+      severity: "info",
+      title: "Produit supprimé",
+      body: `« Pot » supprimé par auteur@${marker}.`,
+      href: "/admin/activity",
+      actorId: "usr_someone_else",
+    });
+    const body = async (role: Session["role"]) =>
+      (await getNotificationFeed({ ...reader, role }, before)).items.find((n) =>
+        n.body.includes(marker),
+      )?.body;
+
+    expect(await body("ADMIN")).toContain(`auteur@${marker}`);
+    expect(await body("VIEWER")).toContain(`a•••@${marker}`);
+    expect(await body("VIEWER")).not.toContain(`auteur@${marker}`);
+  });
+
   it("returns only what arrived from `since`, and ignores a malformed one", async () => {
     const marker = `${randomUUID().slice(0, 8)}.example.com`;
     const before = new Date().toISOString();

@@ -3,6 +3,7 @@ import {
   centsToEuroInput,
   initials,
   maskEmail,
+  maskEmailsIn,
   formatPrice,
   normalizeText,
   parseEuros,
@@ -78,5 +79,22 @@ describe("initials", () => {
   it("takes the first letter of the first two words", () => {
     expect(initials("jeanne  martin dupont")).toBe("JM");
     expect(initials("Paul")).toBe("P");
+  });
+});
+
+describe("maskEmailsIn", () => {
+  it("masks every address inside a sentence", () => {
+    expect(
+      maskEmailsIn(
+        "Chloé (Administrateur) créé par daniel@gmail.com, copie à a.b@x.fr.",
+      ),
+    ).toBe(
+      "Chloé (Administrateur) créé par d•••@gmail.com, copie à a•••@x.fr.",
+    );
+  });
+
+  it("leaves text without address and already masked ones alone", () => {
+    expect(maskEmailsIn("Stock faible")).toBe("Stock faible");
+    expect(maskEmailsIn("pour c•••@example.com")).toBe("pour c•••@example.com");
   });
 });

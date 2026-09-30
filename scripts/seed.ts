@@ -15,14 +15,20 @@ import { SEED_ACTOR, seedCategories } from "./lib/seed-categories";
 
 // pnpm db:seed             → stats + starter categories (DynamoDB Local)
 // pnpm db:seed -- --aws    → same on AWS
-// pnpm db:seed -- --demo   → + ~40 demo products (local only)
+// pnpm db:seed -- --demo   → + demo products, customers, carts, wishlists
+// On AWS, --demo also needs --allow-demo-in-production: the public demo
+// shows fictitious data, never real customers.
 // Idempotent: existing items are left untouched.
+const DAY = 86_400_000;
+
 run(async () => {
   const target = prepareTarget();
   const demo = hasFlag("demo");
   // Checked before any write: a refused command must not change anything.
-  if (demo && target === "aws") {
-    throw new Error("Les produits de démonstration sont réservés au local.");
+  if (demo && target === "aws" && !hasFlag("allow-demo-in-production")) {
+    throw new Error(
+      "Données de démonstration sur AWS : ajoutez --allow-demo-in-production pour confirmer.",
+    );
   }
 
   try {
@@ -69,9 +75,14 @@ run(async () => {
     );
 
     let customers = 0;
-    for (const customer of DEMO_CUSTOMERS) {
+    for (const [index, customer] of DEMO_CUSTOMERS.entries()) {
       try {
-        await createUser({ ...customer, role: "CUSTOMER" });
+        await createUser({
+          ...customer,
+          role: "CUSTOMER",
+          // One sign-up every three days: the dashboard charts have a shape.
+          createdAt: new Date(Date.now() - index * 3 * DAY).toISOString(),
+        });
         customers++;
       } catch (error) {
         if (!(error instanceof AppError && error.code === "EMAIL_TAKEN"))

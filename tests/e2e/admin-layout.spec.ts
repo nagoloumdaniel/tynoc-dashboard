@@ -88,3 +88,14 @@ test.describe("mobile", () => {
     ).toBeVisible();
   });
 });
+
+test("every response carries the security headers", async ({ page }) => {
+  const response = await page.goto("/admin");
+  const headers = response!.headers();
+  expect(headers["content-security-policy"]).toContain(
+    "frame-ancestors 'none'",
+  );
+  expect(headers["x-frame-options"]).toBe("DENY");
+  expect(headers["x-content-type-options"]).toBe("nosniff");
+  expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
+});

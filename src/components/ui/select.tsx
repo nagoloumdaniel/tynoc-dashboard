@@ -66,7 +66,7 @@ export function Select({
         aria-invalid={ariaInvalid}
         className={cn(
           "flex h-10 w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 text-left text-sm shadow-xs transition-colors",
-          "hover:border-primary/40 data-[placeholder]:text-muted-foreground/70 data-[state=open]:border-primary/60",
+          "hover:border-primary/40 data-[placeholder]:text-muted-foreground data-[state=open]:border-primary/60",
           "disabled:cursor-not-allowed disabled:bg-surface-muted disabled:opacity-70 aria-invalid:border-danger",
           className,
         )}

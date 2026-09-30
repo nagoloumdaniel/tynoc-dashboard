@@ -23,6 +23,11 @@ const serverEnvSchema = z.object({
   S3_ENDPOINT: z.preprocess(emptyToUndefined, z.url().optional()),
   // Optional override of the public base URL (e.g. a CDN).
   S3_PUBLIC_URL: z.preprocess(emptyToUndefined, z.url().optional()),
+  // Public read-only demo account: its password cannot be changed.
+  DEMO_ACCOUNT_EMAIL: z.preprocess(
+    emptyToUndefined,
+    z.string().trim().toLowerCase().pipe(z.email()).optional(),
+  ),
   // Sent by Vercel Cron as "Authorization: Bearer <secret>".
   CRON_SECRET: z.preprocess(emptyToUndefined, z.string().min(16).optional()),
   // Production only: IAM role assumed through Vercel OIDC (no stored AWS keys).

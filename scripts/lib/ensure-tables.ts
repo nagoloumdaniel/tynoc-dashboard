@@ -75,15 +75,24 @@ async function addMissingIndexes(
       }),
     );
     log(`  + index ${definition.IndexName} sur ${name} (construction…)`);
-    for (let attempt = 0; attempt < 150; attempt++) {
+    // On AWS an index takes minutes to build, even on an empty table.
+    const deadline = Date.now() + 15 * 60_000;
+    let status: string | undefined;
+    while (Date.now() < deadline) {
       const { Table: table } = await client.send(
         new DescribeTableCommand({ TableName: name }),
       );
-      const status = table?.GlobalSecondaryIndexes?.find(
+      status = table?.GlobalSecondaryIndexes?.find(
         (i) => i.IndexName === definition.IndexName,
       )?.IndexStatus;
       if (status === "ACTIVE") break;
-      await sleep(2000);
+      await sleep(10_000);
+      log(`  … ${definition.IndexName} : ${status ?? "en attente"}`);
+    }
+    if (status !== "ACTIVE") {
+      throw new Error(
+        `L'index ${definition.IndexName} de ${name} n'est pas encore actif. Relancez la commande plus tard : elle reprend où elle en est.`,
+      );
     }
     log(`  index ${definition.IndexName} actif`);
   }

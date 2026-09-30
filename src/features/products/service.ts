@@ -15,6 +15,7 @@ import {
 import type { Session } from "@/lib/auth/session";
 import { AppError, conflict, notFound } from "@/lib/errors";
 import { formatPrice, normalizeText } from "@/lib/format";
+import { deleteImageFiles } from "./image-files";
 import { filterSortPaginate, type ProductPage } from "./list";
 import {
   countProductUsage,
@@ -94,7 +95,7 @@ function putProductOp(product: Product, expectedVersion?: number): TaggedItem {
   };
 }
 
-function audit(
+export function audit(
   actor: Actor,
   action: AuditAction,
   product: Product,
@@ -112,15 +113,16 @@ function audit(
   });
 }
 
-async function loadForChange(id: string, expectedVersion: number) {
+export async function loadForChange(id: string, expectedVersion: number) {
   const product = await findProduct(id);
   if (!product) throw productNotFound();
   if (product.version !== expectedVersion) throw ERRORS.product();
   return product;
 }
 
-/** Saves a new version of a product with its counters and audit entry. */
-async function saveVersion(
+/** Saves a new version of a product with its counters and audit entry.
+ * Shared with image-service.ts, like loadForChange and audit. */
+export async function saveVersion(
   before: Product,
   after: Product,
   extra: TaggedItem[],
@@ -371,4 +373,5 @@ export async function deleteProduct(actor: Actor, id: string): Promise<void> {
       `Suppression définitive de « ${product.name} » (${product.sku}, ${formatPrice(product.priceInCents)})`,
     ),
   ]);
+  await deleteImageFiles(product.id, product.imageKeys);
 }

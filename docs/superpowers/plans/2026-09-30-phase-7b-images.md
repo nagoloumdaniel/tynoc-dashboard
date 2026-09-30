@@ -20,11 +20,11 @@ Décisions :
 
 ### Tâche 2 : règles (pur)
 
-- [ ] `src/features/products/images.ts` : types acceptés, taille max, clé, URL publique, déplacement, image principale + tests ; commit `feat(images): add product image rules`.
+- [x] `src/features/products/images.ts` : types acceptés, taille max, clé, URL publique, déplacement, image principale + tests ; commit `feat(images): add product image rules`.
 
 ### Tâche 3 : service
 
-- [ ] URL présignée, rattachement, suppression, réordonnancement, effacement à la suppression du produit + tests d'intégration (MinIO) ; commit `feat(images): add product image service`.
+- [x] URL présignée, rattachement, suppression, réordonnancement, effacement à la suppression du produit + tests d'intégration (RustFS) ; commit `feat(images): add product image service`.
 
 ### Tâche 4 : interface
 

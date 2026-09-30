@@ -15,6 +15,7 @@ const FIELD_LABELS: Record<string, string> = {
   lowStockThreshold: "Seuil de stock faible",
   status: "Statut",
   stock: "Stock",
+  images: "Images",
   reason: "Raison",
   sortOrder: "Ordre",
   isActive: "Active",

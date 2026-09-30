@@ -19,6 +19,8 @@
   --warning: #b45309;
   --danger: #dc2626;
   --info: #0284c7;
+  /* Single-series charts; each mode's step is validated against its surface. */
+  --chart-1: #4f46e5;
 
   /* The ink sidebar is the one signature surface; everything else stays quiet. */
   --sidebar: #1e1b4b;
@@ -43,6 +45,7 @@
   --primary-hover: #a5b4fc;
   --primary-foreground: #0b1120;
   --ring: #a5b4fc;
+  --chart-1: #6366f1;
   --sidebar: #0f0d2e;
 }
 
@@ -64,6 +67,7 @@
   --color-warning: var(--warning);
   --color-danger: var(--danger);
   --color-info: var(--info);
+  --color-chart-1: var(--chart-1);
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);

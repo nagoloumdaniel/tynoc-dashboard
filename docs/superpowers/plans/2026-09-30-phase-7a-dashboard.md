@@ -20,7 +20,7 @@ Contraintes : TDD, `requireAdmin`, CI locale avant chaque push ; Recharts ajout�
 
 ### Tâche 4 : tableau de bord
 
-- [ ] Page `/admin` : sélecteur de période, cartes, widgets en `Suspense` avec limite d'erreur, graphiques Recharts dynamiques ; commit `feat(dashboard): add dashboard page`.
+- [x] Page `/admin` : sélecteur de période, cartes, widgets en `Suspense` avec limite d'erreur, graphiques Recharts dynamiques ; commit `feat(dashboard): add dashboard page`.
 
 ### Tâche 5 : journal d'activité
 

@@ -13,7 +13,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 - [x] Phase 3 — Produits
 - [x] Phase 4 — Catégories
 - [x] Phase 5 — Utilisateurs
-- [ ] Phase 6 — Paniers et wishlists
+- [x] Phase 6 — Paniers et wishlists
 - [ ] Phase 7 — Dashboard et activité
 - [ ] Phase 8 — Durcissement et livraison
 
@@ -87,6 +87,13 @@ Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts).
 - Fiche : informations, panier et wishlist (compteurs), historique ; modification, suspension / réactivation, changement de rôle, réinitialisation du mot de passe, anonymisation RGPD.
 - Un administrateur gère les clients ; seul un super administrateur gère les administrateurs, les rôles et l'anonymisation. Personne n'agit sur son propre compte (suspension, rôle, anonymisation) et le dernier super administrateur actif est protégé.
 - Nouvel administrateur : mot de passe temporaire affiché une seule fois, à remplacer obligatoirement à la première connexion (`/compte/mot-de-passe`). « Changer mon mot de passe » est dans le menu du compte.
+
+## Paniers et wishlists
+
+- `/admin/carts` : paniers par client, valeur estimée au prix actuel (promo comprise), badge « Abandonné » après 7 jours sans modification, recherche, filtre, tri ; `/admin/carts?product=<id>` liste les paniers contenant un produit.
+- Détail : prix, quantité face au stock, sous-total, disponibilité (disponible, stock insuffisant, rupture, archivé, supprimé), total ; un administrateur peut retirer un article ou vider (confirmation + journal). Même chose pour `/admin/wishlists`.
+- **Contrat de données pour la boutique :** chaque ligne de panier porte `feed: "CART"` et `updatedAt`, chaque ligne de wishlist `feed: "WISHLIST"` et `addedAt`. L'index `byFeed` permet de lister toutes les lignes sans `Scan`.
+- Après une mise à jour du modèle, `pnpm db:create` (ou `-- --aws`) ajoute les index manquants aux tables existantes.
 
 ## Authentification et rôles
 

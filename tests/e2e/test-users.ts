@@ -32,7 +32,30 @@ export const TEST_USERS = {
     name: "Client À Suspendre",
     role: "CUSTOMER",
   },
+  // Owns a 2-line cart and a 2-product wishlist that the E2E tests empty.
+  cartOwner: {
+    email: "panier@test.tynoc.fr",
+    password: "Test-Panier-2026!",
+    name: "Client Panier",
+    role: "CUSTOMER",
+  },
 } as const;
+
+/** Products put in the test carts (created by `pnpm db:test:reset`). */
+export const TEST_CART_PRODUCTS = [
+  {
+    sku: "TEST-CART-1",
+    name: "Bol en grès test",
+    priceInCents: 1500,
+    stock: 10,
+  },
+  {
+    sku: "TEST-CART-2",
+    name: "Tasse émaillée test",
+    priceInCents: 900,
+    stock: 1,
+  },
+] as const;
 
 export const AUTH_STATE = {
   superAdmin: "playwright/.auth/super-admin.json",

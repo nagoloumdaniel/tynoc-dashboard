@@ -44,7 +44,7 @@ export default defineConfig({
       dependencies: ["setup"],
       // Login and account flows do not depend on the viewport, and account
       // changes on shared targets must not run twice in parallel.
-      testIgnore: /(auth|users)\.spec\.ts/,
+      testIgnore: /(auth|users|carts)\.spec\.ts/,
     },
   ],
   webServer: REMOTE_URL

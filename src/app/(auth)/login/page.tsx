@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
         <div className="flex items-center gap-2.5 text-sidebar-active-foreground">
           <span
             aria-hidden
-            className="grid size-8 place-items-center rounded-md bg-primary font-semibold text-white"
+            className="grid size-8 place-items-center rounded-md bg-primary font-semibold text-primary-foreground"
           >
             T
           </span>
@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           <div className="mb-8 flex items-center gap-2.5 lg:hidden">
             <span
               aria-hidden
-              className="grid size-8 place-items-center rounded-md bg-primary font-semibold text-white"
+              className="grid size-8 place-items-center rounded-md bg-primary font-semibold text-primary-foreground"
             >
               T
             </span>

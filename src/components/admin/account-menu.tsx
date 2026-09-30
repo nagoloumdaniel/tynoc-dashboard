@@ -2,12 +2,16 @@
 
 import { ChevronDownIcon, KeyRoundIcon, LogOutIcon } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { useTransition } from "react";
+import { THEMES } from "@/components/theme-provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -25,6 +29,7 @@ export function AccountMenu({
   role: AdminRole;
 }) {
   const [pending, startTransition] = useTransition();
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -53,6 +58,17 @@ export function AccountMenu({
             {ROLE_LABELS[role]}
           </span>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="text-xs text-muted-foreground">
+          Thème
+        </DropdownMenuLabel>
+        <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+          {THEMES.map((option) => (
+            <DropdownMenuRadioItem key={option.value} value={option.value}>
+              {option.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/compte/mot-de-passe">

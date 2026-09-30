@@ -28,7 +28,7 @@ Contraintes : TDD, `requireAdmin`, CI locale avant chaque push ; Recharts ajout�
 
 ### Tâche 6 : mode sombre
 
-- [ ] `next-themes`, choix dans le menu du compte, vérification des contrastes ; commit `feat(ui): add dark mode`.
+- [x] `next-themes`, choix dans le menu du compte, vérification des contrastes ; commit `feat(ui): add dark mode`.
 
 ### Tâche 7 : E2E, documentation, PR
 

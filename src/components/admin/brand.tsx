@@ -12,7 +12,7 @@ export function Brand({ compact = false }: { compact?: boolean }) {
     >
       <span
         aria-hidden
-        className="grid size-7 place-items-center rounded-md bg-primary text-sm font-semibold text-white"
+        className="grid size-7 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground"
       >
         T
       </span>

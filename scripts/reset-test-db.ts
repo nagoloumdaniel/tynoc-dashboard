@@ -94,7 +94,8 @@ run(async () => {
       feed: "WISHLIST",
     });
   }
-  // A cart nobody modifies, for the read-only checks.
+  // A cart and a wishlist nobody modifies, for the read-only checks
+  // (carts.spec.ts empties the cart owner's ones in parallel).
   await put("Carts", {
     userId: userIds.customer,
     productId: products[0]!.id,
@@ -102,6 +103,12 @@ run(async () => {
     addedAt: now,
     updatedAt: now,
     feed: "CART",
+  });
+  await put("Wishlists", {
+    userId: userIds.customer,
+    productId: products[1]!.id,
+    addedAt: now,
+    feed: "WISHLIST",
   });
 
   console.log(

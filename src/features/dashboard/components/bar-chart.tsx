@@ -80,6 +80,9 @@ export default function BarChart({
         layout={horizontal ? "vertical" : "horizontal"}
         margin={{ top: 4, right: 8, bottom: 0, left: 0 }}
         barCategoryGap={2}
+        // The chart is aria-hidden (the data table carries the content), so
+        // it must not take keyboard focus either.
+        accessibilityLayer={false}
       >
         <CartesianGrid
           stroke="var(--border)"

@@ -6,7 +6,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { login } from "../actions";
 
 const inputClass =
-  "block h-10 w-full rounded-md border bg-surface px-3 text-sm shadow-xs placeholder:text-muted-foreground/70 aria-invalid:border-danger";
+  "block h-10 w-full rounded-md border bg-surface px-3 text-sm shadow-xs placeholder:text-muted-foreground aria-invalid:border-danger";
 
 function FieldError({ id, errors }: { id: string; errors?: string[] }) {
   if (!errors?.length) return null;

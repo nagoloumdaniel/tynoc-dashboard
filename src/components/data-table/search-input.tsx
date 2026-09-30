@@ -53,7 +53,7 @@ export function SearchInput({
         placeholder={placeholder}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className="h-10 w-full rounded-md border bg-surface pr-9 pl-9 text-sm shadow-xs placeholder:text-muted-foreground/70 [&::-webkit-search-cancel-button]:hidden"
+        className="h-10 w-full rounded-md border bg-surface pr-9 pl-9 text-sm shadow-xs placeholder:text-muted-foreground [&::-webkit-search-cancel-button]:hidden"
       />
       {value ? (
         <button

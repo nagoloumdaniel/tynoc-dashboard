@@ -26,8 +26,8 @@ Décisions :
 
 ### Tâche 4 : démo en production
 
-- [ ] Drapeau de démo sur AWS, compte `VIEWER` de démo, chargement en prod, vérification ; commit `feat(demo): allow demo data in production on request`.
+- [x] Drapeau de démo sur AWS, compte `VIEWER` de démo, chargement en prod, vérification ; commit `feat(demo): allow demo data in production on request`.
 
 ### Tâche 5 : README et captures
 
-- [ ] Captures (liste du § 22) dans `docs/captures/`, README complet (lien live, compte de démo, architecture, modèle DynamoDB, sécurité, limites, améliorations) ; PR « Phase 8 — Durcissement et livraison ».
+- [x] Captures (liste du § 22) dans `docs/captures/`, README complet (lien live, compte de démo, architecture, modèle DynamoDB, sécurité, limites, améliorations) ; PR « Phase 8 — Durcissement et livraison ».

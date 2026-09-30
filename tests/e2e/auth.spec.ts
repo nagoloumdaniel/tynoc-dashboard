@@ -29,6 +29,22 @@ test.describe("anonymous visitor", () => {
     );
   });
 
+  test("can show and hide the typed password", async ({ page }) => {
+    await page.goto("/login");
+    const field = page.getByLabel("Mot de passe", { exact: true });
+    await field.fill("secret-typed");
+    await expect(field).toHaveAttribute("type", "password");
+
+    await page
+      .getByRole("button", { name: "Afficher le mot de passe" })
+      .click();
+    await expect(field).toHaveAttribute("type", "text");
+    await expect(field).toHaveValue("secret-typed");
+
+    await page.getByRole("button", { name: "Masquer le mot de passe" }).click();
+    await expect(field).toHaveAttribute("type", "password");
+  });
+
   test("is refused with a wrong password", async ({ page }) => {
     await logIn(page, { ...TEST_USERS.superAdmin, password: "wrong-password" });
     await expect(page.locator("form").getByRole("alert")).toHaveText(INVALID);
@@ -44,7 +60,9 @@ test.describe("anonymous visitor", () => {
   test("returns to the requested page after logging in", async ({ page }) => {
     await page.goto("/admin/products");
     await page.getByLabel("Email").fill(TEST_USERS.superAdmin.email);
-    await page.getByLabel("Mot de passe").fill(TEST_USERS.superAdmin.password);
+    await page
+      .getByLabel("Mot de passe", { exact: true })
+      .fill(TEST_USERS.superAdmin.password);
     await page.getByRole("button", { name: "Se connecter" }).click();
 
     await expect(page).toHaveURL(/\/admin\/products$/);

@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/ui/password-input";
 import { login } from "../actions";
 
 const inputClass =
@@ -56,15 +57,13 @@ export function LoginForm({ next }: { next?: string }) {
         <label htmlFor="password" className="mb-1.5 block text-sm font-medium">
           Mot de passe
         </label>
-        <input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           aria-invalid={passwordErrors ? true : undefined}
           aria-describedby={passwordErrors ? "password-error" : undefined}
-          className={inputClass}
         />
         <FieldError id="password-error" errors={passwordErrors} />
       </div>

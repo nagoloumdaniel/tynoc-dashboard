@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import { FormField, Input } from "@/components/ui/field";
+import { FormField } from "@/components/ui/field";
+import { PasswordInput } from "@/components/ui/password-input";
 import { changePasswordAction, type PasswordChangeState } from "../actions";
 
 export function PasswordChangeForm({ forced }: { forced: boolean }) {
@@ -30,10 +31,9 @@ export function PasswordChangeForm({ forced }: { forced: boolean }) {
         error={error("current")}
       >
         {(props) => (
-          <Input
+          <PasswordInput
             {...props}
             name="current"
-            type="password"
             autoComplete="current-password"
             autoFocus
           />
@@ -46,12 +46,7 @@ export function PasswordChangeForm({ forced }: { forced: boolean }) {
         error={error("next")}
       >
         {(props) => (
-          <Input
-            {...props}
-            name="next"
-            type="password"
-            autoComplete="new-password"
-          />
+          <PasswordInput {...props} name="next" autoComplete="new-password" />
         )}
       </FormField>
       <FormField
@@ -60,10 +55,9 @@ export function PasswordChangeForm({ forced }: { forced: boolean }) {
         error={error("confirm")}
       >
         {(props) => (
-          <Input
+          <PasswordInput
             {...props}
             name="confirm"
-            type="password"
             autoComplete="new-password"
           />
         )}

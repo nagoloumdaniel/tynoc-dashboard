@@ -9,7 +9,7 @@ export async function logIn(
 ) {
   await page.goto(path);
   await page.getByLabel("Email").fill(user.email);
-  await page.getByLabel("Mot de passe").fill(user.password);
+  await page.getByLabel("Mot de passe", { exact: true }).fill(user.password);
   await page.getByRole("button", { name: "Se connecter" }).click();
 }
 

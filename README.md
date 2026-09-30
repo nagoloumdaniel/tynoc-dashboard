@@ -14,7 +14,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 - [x] Phase 4 — Catégories
 - [x] Phase 5 — Utilisateurs
 - [x] Phase 6 — Paniers et wishlists
-- [ ] Phase 7 — Dashboard et activité (7a tableau de bord fait ; 7b images S3 et 7c notifications à venir)
+- [ ] Phase 7 — Dashboard et activité (7a tableau de bord et 7b images S3 faits ; 7c notifications à venir)
 - [ ] Phase 8 — Durcissement et livraison
 
 ## Installation locale
@@ -24,8 +24,8 @@ Prérequis : Node.js 24, pnpm 11, Docker.
 ```bash
 pnpm install
 cp .env.example .env.local
-pnpm db:up        # démarre DynamoDB Local sur le port 8000
-pnpm db:create    # crée les tables (idempotent)
+pnpm db:up        # démarre DynamoDB Local (port 8000) et le stockage S3 RustFS (port 9000)
+pnpm db:create    # crée les tables et le bucket d'images (idempotent)
 pnpm db:seed      # compteurs + 6 catégories de départ
 pnpm db:seed -- --demo  # facultatif : ~40 produits de démonstration (local uniquement)
 pnpm admin:create # premier super administrateur (email, nom, mot de passe)
@@ -45,8 +45,8 @@ pnpm dev          # http://localhost:3000/login
 | `pnpm test:unit`     | tests unitaires seuls (sans Docker)                |
 | `pnpm test:e2e`      | tests Playwright (desktop + mobile 375 px)         |
 | `pnpm ci:local`      | CI complète en local (`--quick` : sans build/E2E)  |
-| `pnpm db:up`/`down`  | démarre / arrête DynamoDB Local                    |
-| `pnpm db:create`     | crée les tables DynamoDB Local                     |
+| `pnpm db:up`/`down`  | démarre / arrête DynamoDB Local et RustFS (S3)     |
+| `pnpm db:create`     | crée les tables et le bucket d'images              |
 | `pnpm db:seed`       | insère les données initiales                       |
 | `pnpm db:test:reset` | recrée les tables de test et leurs comptes         |
 | `pnpm admin:create`  | crée un admin ou réinitialise son mot de passe     |
@@ -66,6 +66,9 @@ Tester un déploiement : `E2E_BASE_URL=https://tynoc-dashboard.vercel.app pnpm t
 | `DYNAMODB_TABLE_PREFIX` | `tynoc-`    | préfixe des noms de tables                           |
 | `AWS_ROLE_ARN`          | —           | production : rôle IAM assumé via Vercel OIDC         |
 | `CRON_SECRET`           | —           | production : secret du cron quotidien (≥ 16 car.)    |
+| `S3_BUCKET`             | —           | bucket des images produits (sans lui : pas d'images) |
+| `S3_ENDPOINT`           | —           | `http://localhost:9000` en local, vide en production |
+| `S3_PUBLIC_URL`         | déduite     | URL publique des images (CDN), facultative           |
 
 Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts). Aucun secret AWS n'est committé ; en production l'accès passe par un rôle IAM (OIDC).
 
@@ -75,6 +78,14 @@ Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts).
 - Création, fiche, modification, ajustement de stock avec raison, archivage / restauration (en brouillon), suppression définitive réservée au super administrateur et refusée si le produit est dans un panier ou une wishlist.
 - Montants en centimes ; SKU et slug uniques ; verrouillage optimiste (`version`) ; chaque écriture met à jour les compteurs du tableau de bord et le journal d'activité dans la même transaction DynamoDB.
 - **Limite connue :** la liste charge le catalogue via l'index `byStatus` puis filtre en mémoire, adapté à quelques milliers de produits. Au-delà (~5 000), prévoir un moteur de recherche (OpenSearch, Meilisearch).
+
+## Images produits
+
+- Galerie sur la fiche produit : jusqu'à 8 images JPEG, PNG ou WebP de 5 Mo maximum, envoi de plusieurs fichiers ou glisser-déposer avec aperçu et progression, image principale (la première), ordre, suppression. Miniatures dans la liste des produits, les paniers, les wishlists et le tableau de bord.
+- Le navigateur envoie le fichier **directement à S3** par un POST présigné : clé, type et taille sont imposés par la signature, donc refusés par S3 lui-même. Le serveur vérifie ensuite que le fichier existe avant de l'attacher au produit (verrou de version, journal d'activité).
+- Le bucket n'expose publiquement que `products/*`. Supprimer une image ou un produit efface aussi les fichiers.
+- En local : [RustFS](https://github.com/rustfs/rustfs) (compatible S3) dans Docker, car les images MinIO ne sont plus publiées. En production : S3, voir [docs/deploiement-aws.md](docs/deploiement-aws.md).
+- **Limite connue :** un fichier envoyé mais jamais attaché (onglet fermé pendant l'envoi) reste dans le bucket ; nettoyage prévu en phase 8.
 
 ## Catégories
 

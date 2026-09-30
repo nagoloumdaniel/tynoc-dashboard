@@ -9,6 +9,9 @@ import {
 } from "@/features/products/components/badges";
 import { Price } from "@/features/products/components/price";
 import { ProductActions } from "@/features/products/components/product-actions";
+import { ProductGallery } from "@/features/products/components/product-gallery";
+import { imagesEnabled, imageUrls } from "@/features/products/image-urls";
+import { MAX_IMAGES } from "@/features/products/images";
 import {
   getProduct,
   getProductActivity,
@@ -76,6 +79,7 @@ export default async function ProductPage({
     getProductUsage(product.id),
     getProductActivity(product.id, 10),
   ]);
+  const urls = imageUrls(product.imageKeys);
 
   return (
     <>
@@ -106,8 +110,25 @@ export default async function ProductPage({
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      {/* grid-cols-1 is minmax(0, 1fr): long history lines cannot widen it. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
+          <Card title={`Images (${product.imageKeys.length}/${MAX_IMAGES})`}>
+            <ProductGallery
+              productId={product.id}
+              version={product.version}
+              images={product.imageKeys.map((key, index) => ({
+                key,
+                url: urls[index]!,
+              }))}
+              canEdit={
+                can(session.role, "products:write") &&
+                product.status !== "ARCHIVED"
+              }
+              enabled={imagesEnabled()}
+            />
+          </Card>
+
           <Card title="Informations">
             <dl className="divide-y">
               <Row label="Catégorie">

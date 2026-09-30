@@ -52,7 +52,7 @@ Livrée en trois PR successives : **7a** (tableau de bord, comparaisons, activit
 - Bucket `tynoc-dashboard-images-<compte>` (eu-west-3). Politique : lecture publique de `products/*` uniquement ; écriture par URL présignée POST (types `image/jpeg|png|webp`, 5 Mo max, contrôlés par S3).
 - Clé : `products/<productId>/<uuid>.<ext>` ; `Product.imageKeys` (8 max, la première est l'image principale).
 - Fiche produit : galerie (ajout avec aperçu et progression, image principale, suppression avec effacement S3, réordonnancement). Miniatures dans listes, cartes, paniers, wishlists via `next/image`.
-- Local et E2E : MinIO (Docker) ; bucket créé par les scripts. Variables : `S3_BUCKET`, `S3_ENDPOINT` (local), `S3_PUBLIC_URL`.
+- Local et E2E : RustFS (Docker, compatible S3 ; MinIO n'est plus publié) ; bucket créé par les scripts. Variables : `S3_BUCKET`, `S3_ENDPOINT` (local), `S3_PUBLIC_URL`.
 - Rôle IAM de production : `s3:PutObject`, `s3:DeleteObject` sur `arn:aws:s3:::<bucket>/products/*`.
 
 ## 7c — Notifications

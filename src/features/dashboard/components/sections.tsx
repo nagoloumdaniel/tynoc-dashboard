@@ -4,6 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { listActivity } from "@/features/activity/service";
 import { formatDateTime } from "@/features/carts/components/shared";
 import { StockBadge } from "@/features/products/components/badges";
+import { ProductThumb } from "@/features/products/components/product-thumb";
+import { mainImageUrl } from "@/features/products/image-urls";
 import { AUDIT_ACTION_LABELS, auditEntityHref } from "@/lib/audit/actions";
 import { maskEmail } from "@/lib/format";
 import type { Period } from "../period";
@@ -189,6 +191,9 @@ export function ChartsSkeleton() {
 
 // ---- Widgets -----------------------------------------------------------------
 
+/** Each dashboard list shows this many rows; "Tout voir" leads to the rest. */
+const WIDGET_ROWS = 5;
+
 function Widget({
   title,
   href,
@@ -221,7 +226,7 @@ const Empty = ({ children }: { children: ReactNode }) => (
 );
 
 export async function StockAlertsWidget() {
-  const products = await getStockAlerts(8);
+  const products = await getStockAlerts(WIDGET_ROWS);
   return (
     <Widget
       title="Alertes de stock"
@@ -256,7 +261,7 @@ export async function StockAlertsWidget() {
 }
 
 export async function LatestProductsWidget() {
-  const products = await getLatestProducts(5);
+  const products = await getLatestProducts(WIDGET_ROWS);
   return (
     <Widget
       title="Derniers produits"
@@ -268,16 +273,22 @@ export async function LatestProductsWidget() {
       ) : (
         <ul className="divide-y">
           {products.map((product) => (
-            <li key={product.id} className="py-2 text-sm">
-              <Link
-                href={`/admin/products/${product.id}`}
-                className="block truncate hover:underline"
-              >
-                {product.name}
-              </Link>
-              <span className="text-xs text-muted-foreground tabular-nums">
-                {formatDateTime(product.createdAt)}
-              </span>
+            <li
+              key={product.id}
+              className="flex items-center gap-3 py-2 text-sm"
+            >
+              <ProductThumb src={mainImageUrl(product)} />
+              <div className="min-w-0">
+                <Link
+                  href={`/admin/products/${product.id}`}
+                  className="block truncate hover:underline"
+                >
+                  {product.name}
+                </Link>
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  {formatDateTime(product.createdAt)}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
@@ -291,7 +302,7 @@ export async function LatestCustomersWidget({
 }: {
   maskEmails: boolean;
 }) {
-  const customers = await getLatestCustomers(5);
+  const customers = await getLatestCustomers(WIDGET_ROWS);
   return (
     <Widget
       title="Derniers clients"
@@ -322,7 +333,7 @@ export async function LatestCustomersWidget({
 }
 
 export async function RecentActivityWidget({ period }: { period: Period }) {
-  const { items } = await listActivity({ period }, undefined, 8);
+  const { items } = await listActivity({ period }, undefined, WIDGET_ROWS);
   return (
     <Widget
       title="Activité récente"

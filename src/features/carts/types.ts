@@ -23,6 +23,7 @@ export type ProductSnapshot = {
   salePriceInCents?: number;
   stock: number;
   status: ProductStatus;
+  imageKeys?: string[];
 };
 
 export type Availability =

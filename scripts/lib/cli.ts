@@ -18,6 +18,7 @@ export function getArg(name: string): string | undefined {
 export function prepareTarget(): "aws" | "local" {
   if (hasFlag("aws")) {
     delete process.env.DYNAMODB_ENDPOINT;
+    delete process.env.S3_ENDPOINT;
     delete process.env.AWS_ROLE_ARN;
     return "aws";
   }

@@ -1,27 +1,16 @@
-import { PackageIcon } from "lucide-react";
 import Link from "next/link";
 import { type Column, DataTable } from "@/components/data-table/data-table";
+import { mainImageUrl } from "../image-urls";
 import type { ProductListItem } from "../types";
 import { ProductStatusBadge, StockBadge } from "./badges";
 import { Price } from "./price";
+import { ProductThumb } from "./product-thumb";
 import { RowActions } from "./row-actions";
-
-function Thumbnail() {
-  // Images arrive in phase 7; a neutral tile keeps rows aligned.
-  return (
-    <span
-      aria-hidden
-      className="grid size-10 shrink-0 place-items-center rounded-md border bg-surface-muted text-muted-foreground"
-    >
-      <PackageIcon className="size-4" />
-    </span>
-  );
-}
 
 function NameCell({ product }: { product: ProductListItem }) {
   return (
     <div className="flex items-center gap-3">
-      <Thumbnail />
+      <ProductThumb src={mainImageUrl(product)} />
       <div className="min-w-0">
         <Link
           href={`/admin/products/${product.id}`}

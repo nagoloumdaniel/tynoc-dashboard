@@ -20,6 +20,7 @@ function item(
     priceInCents: 1000,
     stock: 20,
     lowStockThreshold: 5,
+    imageKeys: [],
     status: "ACTIVE",
     createdAt: "2026-09-01T00:00:00.000Z",
     version: 1,

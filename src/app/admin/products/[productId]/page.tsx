@@ -177,7 +177,18 @@ export default async function ProductPage({
 
           <Card title="Chez les clients">
             <dl className="divide-y">
-              <Row label="Dans des paniers">{usage.carts}</Row>
+              <Row label="Dans des paniers">
+                {usage.carts > 0 ? (
+                  <Link
+                    href={`/admin/carts?product=${product.id}`}
+                    className="hover:underline"
+                  >
+                    {usage.carts} · voir
+                  </Link>
+                ) : (
+                  0
+                )}
+              </Row>
               <Row label="Dans des wishlists">{usage.wishlists}</Row>
             </dl>
           </Card>

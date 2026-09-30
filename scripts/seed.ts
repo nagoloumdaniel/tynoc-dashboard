@@ -8,6 +8,7 @@ import { AppError } from "../src/lib/errors";
 import { db, table } from "../src/lib/aws/dynamodb";
 import { isConditionFailure } from "../src/lib/aws/errors";
 import { hasFlag, prepareTarget, run } from "./lib/cli";
+import { seedDemoCarts } from "./lib/demo-carts";
 import { DEMO_CUSTOMERS } from "./lib/demo-customers";
 import { DEMO_PRODUCTS } from "./lib/demo-products";
 import { SEED_ACTOR, seedCategories } from "./lib/seed-categories";
@@ -79,6 +80,11 @@ run(async () => {
     }
     console.log(
       `+ ${customers} client(s) de démonstration (${DEMO_CUSTOMERS.length - customers} déjà présents)`,
+    );
+
+    const carts = await seedDemoCarts();
+    console.log(
+      `+ ${carts.cartLines} ligne(s) de panier, ${carts.wishlistLines} ligne(s) de wishlist`,
     );
   }
 });

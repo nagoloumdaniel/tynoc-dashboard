@@ -19,6 +19,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
+  // The local CI runs every worker, DynamoDB Local, S3 and scrypt on one
+  // machine: server round-trips can exceed the default 5 s under load.
+  expect: { timeout: process.env.CI ? 10_000 : 5_000 },
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : "list",
   globalSetup: REMOTE_URL ? undefined : "./tests/e2e/global-setup.ts",
   use: {
@@ -45,8 +48,9 @@ export default defineConfig({
       },
       dependencies: ["setup"],
       // Login and account flows do not depend on the viewport, and account
-      // changes on shared targets must not run twice in parallel.
-      testIgnore: /(auth|users|carts)\.spec\.ts/,
+      // changes on shared targets (carts, an admin's read position) must not
+      // run twice in parallel.
+      testIgnore: /(auth|users|carts|notifications)\.spec\.ts/,
     },
   ],
   webServer: REMOTE_URL

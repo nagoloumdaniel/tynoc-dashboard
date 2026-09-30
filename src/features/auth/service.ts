@@ -1,4 +1,6 @@
 import "server-only";
+import { loginBlocked } from "@/features/notifications/events";
+import { recordNotification } from "@/features/notifications/repository";
 import { normalizeEmail, findUserByEmail } from "@/features/users/repository";
 import { dummyHash, verifyPassword } from "@/lib/auth/password";
 import { type AdminRole, isAdminRole } from "@/lib/auth/permissions";
@@ -45,7 +47,8 @@ export async function authenticate(input: {
     user.status !== "ACTIVE" ||
     !isAdminRole(user.role)
   ) {
-    await recordLoginFailure(email, input.ip);
+    const { emailBlocked } = await recordLoginFailure(email, input.ip);
+    if (emailBlocked) await recordNotification(loginBlocked(email));
     return { ok: false, reason: "INVALID_CREDENTIALS" };
   }
 

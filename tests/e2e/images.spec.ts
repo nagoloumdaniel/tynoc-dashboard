@@ -25,6 +25,8 @@ async function createProduct(page: Page) {
 test("uploads images, changes the main one and deletes one", async ({
   page,
 }) => {
+  // Each upload is three round-trips (sign, S3, attach), one after the other.
+  test.slow();
   await createProduct(page);
   const gallery = page
     .getByRole("list")

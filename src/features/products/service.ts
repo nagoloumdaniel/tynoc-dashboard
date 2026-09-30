@@ -1,7 +1,11 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { isCategoryUsable } from "@/features/categories/service";
-import { type AuditAction, auditOp } from "@/lib/audit/audit-log";
+import {
+  type AuditAction,
+  auditOp,
+  queryEntityActivity,
+} from "@/lib/audit/audit-log";
 import { table } from "@/lib/aws/dynamodb";
 import {
   type TaggedItem,
@@ -15,7 +19,6 @@ import { filterSortPaginate, type ProductPage } from "./list";
 import {
   countProductUsage,
   findProduct,
-  queryProductActivity,
   queryProductsByStatus,
   releaseUniqueOp,
   reserveUniqueOp,
@@ -147,7 +150,7 @@ export async function listProducts(
 export const getProductUsage = countProductUsage;
 
 export function getProductActivity(productId: string, limit = 10) {
-  return queryProductActivity(productId, limit);
+  return queryEntityActivity("PRODUCT", productId, limit);
 }
 
 // ---- Commands ----------------------------------------------------------------

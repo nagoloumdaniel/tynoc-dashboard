@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDownIcon, LogOutIcon } from "lucide-react";
+import { ChevronDownIcon, KeyRoundIcon, LogOutIcon } from "lucide-react";
+import Link from "next/link";
 import { useTransition } from "react";
 import {
   DropdownMenu,
@@ -11,16 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logout } from "@/features/auth/actions";
+import { initials } from "@/lib/format";
 import { type AdminRole, ROLE_LABELS } from "@/lib/auth/permissions";
-
-function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
 
 export function AccountMenu({
   name,
@@ -61,6 +54,12 @@ export function AccountMenu({
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/compte/mot-de-passe">
+            <KeyRoundIcon aria-hidden />
+            Changer mon mot de passe
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem
           disabled={pending}
           onSelect={() => startTransition(() => logout())}

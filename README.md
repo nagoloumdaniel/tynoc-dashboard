@@ -12,7 +12,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 - [x] Phase 2 — Authentification et rôles
 - [x] Phase 3 — Produits
 - [x] Phase 4 — Catégories
-- [ ] Phase 5 — Utilisateurs
+- [x] Phase 5 — Utilisateurs
 - [ ] Phase 6 — Paniers et wishlists
 - [ ] Phase 7 — Dashboard et activité
 - [ ] Phase 8 — Durcissement et livraison
@@ -80,6 +80,13 @@ Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts).
 - `/admin/categories` : liste hiérarchique (un niveau de sous-catégories), recherche, filtre actives / inactives, création et modification dans une fenêtre, activation / désactivation, suppression.
 - Suppression refusée tant que la catégorie contient des produits (même archivés) ou des sous-catégories ; une catégorie désactivée n'est plus proposée pour les nouveaux produits, sans toucher aux produits existants.
 - Côté produits : libellés « Parent › Enfant », et filtrer par une catégorie principale inclut ses sous-catégories.
+
+## Utilisateurs
+
+- `/admin/users` : clients et administrateurs, recherche nom / email, filtres type et statut, tri, pagination ; emails masqués pour les comptes en lecture seule.
+- Fiche : informations, panier et wishlist (compteurs), historique ; modification, suspension / réactivation, changement de rôle, réinitialisation du mot de passe, anonymisation RGPD.
+- Un administrateur gère les clients ; seul un super administrateur gère les administrateurs, les rôles et l'anonymisation. Personne n'agit sur son propre compte (suspension, rôle, anonymisation) et le dernier super administrateur actif est protégé.
+- Nouvel administrateur : mot de passe temporaire affiché une seule fois, à remplacer obligatoirement à la première connexion (`/compte/mot-de-passe`). « Changer mon mot de passe » est dans le menu du compte.
 
 ## Authentification et rôles
 

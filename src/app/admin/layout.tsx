@@ -1,7 +1,9 @@
 import { cookies } from "next/headers";
+import { Suspense } from "react";
 import { Sidebar } from "@/components/admin/sidebar";
 import { SIDEBAR_COOKIE } from "@/components/admin/sidebar-cookie";
 import { Topbar } from "@/components/admin/topbar";
+import { FlashToast } from "@/components/feedback/flash-toast";
 import { requireAdmin } from "@/lib/auth/dal";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
@@ -25,6 +27,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         >
           {children}
         </main>
+        <Suspense>
+          <FlashToast />
+        </Suspense>
       </div>
     </div>
   );

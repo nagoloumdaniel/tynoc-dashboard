@@ -16,6 +16,10 @@ export async function requireAdmin(
 ): Promise<Session> {
   const session = await getSession();
   if (!session) redirect("/login");
+  // A temporary password grants nothing until it has been replaced.
+  if (session.mustChangePassword) redirect(PASSWORD_CHANGE_PATH);
   if (!can(session.role, permission)) forbidden();
   return session;
 }
+
+export const PASSWORD_CHANGE_PATH = "/compte/mot-de-passe";

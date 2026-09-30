@@ -7,6 +7,12 @@ export const TEST_USERS = {
     name: "Super Admin Test",
     role: "SUPER_ADMIN",
   },
+  admin: {
+    email: "admin@test.tynoc.fr",
+    password: "Test-Admin-2026!",
+    name: "Admin Test",
+    role: "ADMIN",
+  },
   viewer: {
     email: "lecteur@test.tynoc.fr",
     password: "Test-Lecteur-2026!",
@@ -19,9 +25,17 @@ export const TEST_USERS = {
     name: "Client Test",
     role: "CUSTOMER",
   },
+  // Dedicated targets: destructive tests never touch shared accounts.
+  toSuspend: {
+    email: "a.suspendre@test.tynoc.fr",
+    password: "Test-Suspendre-2026!",
+    name: "Client À Suspendre",
+    role: "CUSTOMER",
+  },
 } as const;
 
 export const AUTH_STATE = {
   superAdmin: "playwright/.auth/super-admin.json",
+  admin: "playwright/.auth/admin.json",
   viewer: "playwright/.auth/viewer.json",
 } as const;

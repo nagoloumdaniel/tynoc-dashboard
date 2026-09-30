@@ -13,6 +13,7 @@ export type AuthUser = {
   name: string;
   email: string;
   role: AdminRole;
+  mustChangePassword?: boolean;
 };
 
 export type AuthResult =
@@ -51,6 +52,12 @@ export async function authenticate(input: {
   await clearLoginFailures(email);
   return {
     ok: true,
-    user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      mustChangePassword: user.mustChangePassword,
+    },
   };
 }

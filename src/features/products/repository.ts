@@ -82,32 +82,6 @@ export async function countProductUsage(productId: string) {
   return { carts, wishlists };
 }
 
-export type ActivityEntry = {
-  id: string;
-  action: string;
-  actorEmail: string;
-  summary: string;
-  createdAt: string;
-};
-
-export async function queryProductActivity(
-  productId: string,
-  limit: number,
-): Promise<ActivityEntry[]> {
-  const { Items } = await db().send(
-    new QueryCommand({
-      TableName: table("AuditLogs"),
-      KeyConditionExpression: "pk = :pk",
-      ExpressionAttributeValues: { ":pk": `PRODUCT#${productId}` },
-      ProjectionExpression: "id, #action, actorEmail, summary, createdAt",
-      ExpressionAttributeNames: { "#action": "action" },
-      ScanIndexForward: false,
-      Limit: limit,
-    }),
-  );
-  return (Items ?? []) as ActivityEntry[];
-}
-
 // ---- Transaction building blocks -------------------------------------------
 
 export function reserveUniqueOp(

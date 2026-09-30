@@ -42,8 +42,9 @@ export default defineConfig({
         storageState: AUTH_STATE.superAdmin,
       },
       dependencies: ["setup"],
-      // Login flows do not depend on the viewport; run them once.
-      testIgnore: /auth\.spec\.ts/,
+      // Login and account flows do not depend on the viewport, and account
+      // changes on shared targets must not run twice in parallel.
+      testIgnore: /(auth|users)\.spec\.ts/,
     },
   ],
   webServer: REMOTE_URL

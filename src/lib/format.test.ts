@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   centsToEuroInput,
+  initials,
+  maskEmail,
   formatPrice,
   normalizeText,
   parseEuros,
@@ -58,5 +60,23 @@ describe("slugify", () => {
     expect(slugify("Lampe d'été 60 W !")).toBe("lampe-d-ete-60-w");
     expect(slugify("  --Table   basse--  ")).toBe("table-basse");
     expect(slugify("!!!")).toBe("");
+  });
+});
+
+describe("maskEmail", () => {
+  it("keeps the first letter and the domain", () => {
+    expect(maskEmail("jeanne.martin@exemple.fr")).toBe("j•••@exemple.fr");
+    expect(maskEmail("a@b.fr")).toBe("a•••@b.fr");
+  });
+
+  it("masks a malformed value entirely", () => {
+    expect(maskEmail("sans-arobase")).toBe("•••");
+  });
+});
+
+describe("initials", () => {
+  it("takes the first letter of the first two words", () => {
+    expect(initials("jeanne  martin dupont")).toBe("JM");
+    expect(initials("Paul")).toBe("P");
   });
 });

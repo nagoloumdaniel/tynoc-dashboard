@@ -1,6 +1,6 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { db, table } from "@/lib/aws/dynamodb";
 import type { TaggedItem } from "@/lib/aws/transaction";
 
@@ -13,6 +13,10 @@ export type AuditAction =
   | "RESTORE"
   | "ACTIVATE"
   | "DEACTIVATE"
+  | "REACTIVATE"
+  | "PASSWORD_RESET"
+  | "PASSWORD_CHANGE"
+  | "ANONYMIZE"
   | "DELETE"
   | "STOCK_ADJUST"
   | "ROLE_CHANGE"
@@ -63,4 +67,32 @@ export async function writeAuditLog(entry: AuditEntry): Promise<void> {
       Item: buildAuditLogItem(entry),
     }),
   );
+}
+
+export type ActivityEntry = {
+  id: string;
+  action: AuditAction;
+  actorEmail: string;
+  summary: string;
+  createdAt: string;
+};
+
+/** Latest audit entries about one entity, newest first. */
+export async function queryEntityActivity(
+  entityType: AuditEntityType,
+  entityId: string,
+  limit: number,
+): Promise<ActivityEntry[]> {
+  const { Items } = await db().send(
+    new QueryCommand({
+      TableName: table("AuditLogs"),
+      KeyConditionExpression: "pk = :pk",
+      ExpressionAttributeValues: { ":pk": `${entityType}#${entityId}` },
+      ProjectionExpression: "id, #action, actorEmail, summary, createdAt",
+      ExpressionAttributeNames: { "#action": "action" },
+      ScanIndexForward: false,
+      Limit: limit,
+    }),
+  );
+  return (Items ?? []) as ActivityEntry[];
 }

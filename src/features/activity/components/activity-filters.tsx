@@ -3,7 +3,7 @@
 import { RotateCcwIcon } from "lucide-react";
 import { useUrlFilters } from "@/components/data-table/use-url-filters";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { PERIODS } from "@/features/dashboard/period";
 import {
   AUDIT_ACTION_LABELS,
@@ -39,64 +39,54 @@ export function ActivityFilters({
     >
       <Select
         aria-label="Période"
-        value={query.period}
-        onChange={(event) =>
-          setFilters({
-            period:
-              event.target.value === "30" ? undefined : event.target.value,
-          })
+        value={String(query.period)}
+        onValueChange={(value) =>
+          setFilters({ period: value === "30" ? undefined : value })
         }
-      >
-        {PERIODS.map((period) => (
-          <option key={period} value={period}>
-            {period} derniers jours
-          </option>
-        ))}
-      </Select>
+        options={PERIODS.map((period) => ({
+          value: String(period),
+          label: `${period} derniers jours`,
+        }))}
+      />
       <Select
         aria-label="Type d'élément"
         value={query.entity ?? ""}
-        onChange={(event) =>
-          setFilters({ entity: event.target.value || undefined })
-        }
-      >
-        <option value="">Tous les éléments</option>
-        {AUDIT_ENTITY_TYPES.map((type) => (
-          <option key={type} value={type}>
-            {AUDIT_ENTITY_LABELS[type]}
-          </option>
-        ))}
-      </Select>
+        onValueChange={(value) => setFilters({ entity: value || undefined })}
+        options={[
+          { value: "", label: "Tous les éléments" },
+          ...AUDIT_ENTITY_TYPES.map((type) => ({
+            value: type,
+            label: AUDIT_ENTITY_LABELS[type],
+          })),
+        ]}
+      />
       <Select
         aria-label="Action"
         value={query.action ?? ""}
-        onChange={(event) =>
-          setFilters({ action: event.target.value || undefined })
-        }
-      >
-        <option value="">Toutes les actions</option>
-        {AUDIT_ACTIONS.map((action) => (
-          <option key={action} value={action}>
-            {AUDIT_ACTION_LABELS[action]}
-          </option>
-        ))}
-      </Select>
+        onValueChange={(value) => setFilters({ action: value || undefined })}
+        options={[
+          { value: "", label: "Toutes les actions" },
+          ...AUDIT_ACTIONS.map((action) => ({
+            value: action,
+            label: AUDIT_ACTION_LABELS[action],
+          })),
+        ]}
+      />
       <Select
         aria-label="Auteur"
         value={query.actor ?? ""}
-        onChange={(event) =>
-          setFilters({ actor: event.target.value || undefined })
-        }
-      >
-        <option value="">Tous les auteurs</option>
-        {actorOptions.map((actor) => (
-          <option key={actor.email} value={actor.email}>
-            {actor.name === actor.email
-              ? actor.email
-              : `${actor.name} (${actor.email})`}
-          </option>
-        ))}
-      </Select>
+        onValueChange={(value) => setFilters({ actor: value || undefined })}
+        options={[
+          { value: "", label: "Tous les auteurs" },
+          ...actorOptions.map((actor) => ({
+            value: actor.email,
+            label:
+              actor.name === actor.email
+                ? actor.email
+                : `${actor.name} (${actor.email})`,
+          })),
+        ]}
+      />
       {filtered ? (
         <Button
           variant="ghost"

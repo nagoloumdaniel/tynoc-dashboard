@@ -10,7 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FormField, Input, Select } from "@/components/ui/field";
+import { FormField, Input } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { adjustStockAction } from "../actions";
 import { STOCK_REASON_LABELS, STOCK_REASONS } from "../schemas";
@@ -141,15 +142,13 @@ export function StockDialog({
               <Select
                 {...props}
                 value={reason}
-                onChange={(event) => setReason(event.target.value)}
-              >
-                <option value="">Choisir…</option>
-                {STOCK_REASONS.map((value) => (
-                  <option key={value} value={value}>
-                    {STOCK_REASON_LABELS[value]}
-                  </option>
-                ))}
-              </Select>
+                onValueChange={setReason}
+                placeholder="Choisir…"
+                options={STOCK_REASONS.map((value) => ({
+                  value,
+                  label: STOCK_REASON_LABELS[value],
+                }))}
+              />
             )}
           </FormField>
 

@@ -16,7 +16,7 @@ import { ConfirmDialog } from "@/components/feedback/confirm-dialog";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { normalizeText } from "@/lib/format";
 import { deleteCategoryAction, setCategoryActiveAction } from "../actions";
 import type { CategoryNode } from "../tree";
@@ -231,12 +231,13 @@ export function CategoryList({
         <Select
           aria-label="Statut"
           value={status}
-          onChange={(event) => setStatus(event.target.value as StatusFilter)}
-        >
-          <option value="all">Toutes</option>
-          <option value="active">Actives</option>
-          <option value="inactive">Inactives</option>
-        </Select>
+          onValueChange={(value) => setStatus(value as StatusFilter)}
+          options={[
+            { value: "all", label: "Toutes" },
+            { value: "active", label: "Actives" },
+            { value: "inactive", label: "Inactives" },
+          ]}
+        />
       </div>
 
       {rows.length === 0 ? (

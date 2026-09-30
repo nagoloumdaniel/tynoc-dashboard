@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page, test } from "@playwright/test";
-import { IS_REMOTE } from "./helpers";
+import { chooseOption, IS_REMOTE } from "./helpers";
 import { AUTH_STATE } from "./test-users";
 
 // These journeys write data: local test tables only.
@@ -18,10 +18,10 @@ async function createViaForm(
   await page.goto("/admin/products/new");
   await page.getByLabel("Nom", { exact: true }).fill(product.name);
   await page.getByLabel("SKU").fill(product.sku);
-  await page.getByLabel("Catégorie").selectOption({ label: "Mobilier" });
+  await chooseOption(page.getByLabel("Catégorie"), "Mobilier");
   await page.getByLabel("Prix (€)").fill("49,90");
   await page.getByLabel("Stock initial").fill("8");
-  await page.getByLabel("Statut").selectOption("ACTIVE");
+  await chooseOption(page.getByLabel("Statut"), "Actif");
   await page.getByRole("button", { name: "Créer le produit" }).click();
 }
 
@@ -61,7 +61,7 @@ test("creates, finds, edits, restocks, archives and deletes a product", async ({
   await page.getByRole("button", { name: "Ajuster le stock" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("Variation").fill("-3");
-  await dialog.getByLabel("Raison").selectOption({ label: "Casse ou perte" });
+  await chooseOption(dialog.getByLabel("Raison"), "Casse ou perte");
   await expect(dialog.getByText("Stock après ajustement : 5")).toBeVisible();
   await dialog.getByRole("button", { name: "Mettre à jour le stock" }).click();
   await expect(page.getByText("Stock mis à jour.")).toBeVisible();

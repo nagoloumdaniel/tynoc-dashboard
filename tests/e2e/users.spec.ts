@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page, test } from "@playwright/test";
-import { IS_REMOTE, logIn } from "./helpers";
+import { chooseOption, IS_REMOTE, logIn } from "./helpers";
 import { AUTH_STATE, TEST_USERS } from "./test-users";
 
 test.skip(IS_REMOTE, "writes accounts");
@@ -22,7 +22,7 @@ test("a new admin must replace the temporary password before anything else", asy
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("Nom").fill("Nouvel Admin");
   await dialog.getByLabel("Email").fill(email);
-  await dialog.getByLabel("Rôle").selectOption("ADMIN");
+  await chooseOption(dialog.getByLabel("Rôle"), "Administrateur");
   await dialog.getByRole("button", { name: "Créer le compte" }).click();
   const temporary = (
     await dialog.getByLabel("Mot de passe temporaire").textContent()

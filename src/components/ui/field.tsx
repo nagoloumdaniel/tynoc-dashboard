@@ -26,11 +26,6 @@ export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   );
 }
 
-/** Native select: accessible by default and uses the phone's own picker. */
-export function Select({ className, ...props }: ComponentProps<"select">) {
-  return <select className={cn(control, "h-10 pr-8", className)} {...props} />;
-}
-
 /**
  * Label + control + hint + error, wired for screen readers. The control is
  * rendered by `children(describedBy, invalid)` so any input type fits.

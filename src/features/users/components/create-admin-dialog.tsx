@@ -10,7 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FormField, Input, Select } from "@/components/ui/field";
+import { FormField, Input } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { ADMIN_ROLES, ROLE_LABELS } from "@/lib/auth/permissions";
 import { createAdminAction, type CreateAdminState } from "../actions";
 import { TemporaryPassword } from "./temporary-password";
@@ -67,13 +68,11 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
             {...props}
             name="role"
             defaultValue={state?.values?.role ?? "ADMIN"}
-          >
-            {ADMIN_ROLES.map((role) => (
-              <option key={role} value={role}>
-                {ROLE_LABELS[role]}
-              </option>
-            ))}
-          </Select>
+            options={ADMIN_ROLES.map((role) => ({
+              value: role,
+              label: ROLE_LABELS[role],
+            }))}
+          />
         )}
       </FormField>
       {state?.message ? (

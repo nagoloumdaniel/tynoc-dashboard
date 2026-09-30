@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { FormField, Input, Select, Textarea } from "@/components/ui/field";
+import { FormField, Input, Textarea } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { slugify } from "@/lib/format";
 import {
   createProductAction,
@@ -24,11 +25,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="space-y-4 rounded-lg border bg-surface p-5">
-      <legend className="float-left mb-1 w-full text-base font-semibold">
+    <fieldset className="min-w-0 rounded-lg border bg-surface p-5">
+      {/* Floated so it sits inside the card rather than on its border. */}
+      <legend className="float-left mb-4 w-full text-base font-semibold">
         {title}
       </legend>
-      {children}
+      {/* clear-both: a grid next to a float would sit beside it and overflow. */}
+      <div className="clear-both space-y-4">{children}</div>
     </fieldset>
   );
 }
@@ -185,8 +188,8 @@ export function ProductForm({
               </FormField>
               <FormField
                 id="salePrice"
-                label="Prix promotionnel (€, facultatif)"
-                hint="Doit être inférieur au prix."
+                label="Prix promo (€)"
+                hint="Facultatif, inférieur au prix."
                 error={error("salePrice")}
               >
                 {(props) => (
@@ -211,10 +214,15 @@ export function ProductForm({
               error={error("status")}
             >
               {(props) => (
-                <Select {...props} name="status" defaultValue={values.status}>
-                  <option value="DRAFT">Brouillon</option>
-                  <option value="ACTIVE">Actif</option>
-                </Select>
+                <Select
+                  {...props}
+                  name="status"
+                  defaultValue={values.status}
+                  options={[
+                    { value: "DRAFT", label: "Brouillon" },
+                    { value: "ACTIVE", label: "Actif" },
+                  ]}
+                />
               )}
             </FormField>
             <FormField
@@ -227,15 +235,12 @@ export function ProductForm({
                   {...props}
                   name="categoryId"
                   defaultValue={values.categoryId}
-                  required
-                >
-                  <option value="">Choisir…</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.label}
-                    </option>
-                  ))}
-                </Select>
+                  placeholder="Choisir…"
+                  options={categories.map((category) => ({
+                    value: category.id,
+                    label: category.label,
+                  }))}
+                />
               )}
             </FormField>
           </Section>

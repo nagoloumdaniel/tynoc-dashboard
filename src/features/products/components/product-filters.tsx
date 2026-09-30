@@ -5,7 +5,7 @@ import Link from "next/link";
 import { SearchInput } from "@/components/data-table/search-input";
 import { useUrlFilters } from "@/components/data-table/use-url-filters";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { ListStatus, ProductListQuery, ProductSort } from "../schemas";
 
@@ -83,47 +83,39 @@ export function ProductFilters({
         <Select
           aria-label="Catégorie"
           value={query.category ?? ""}
-          onChange={(event) =>
-            setFilters({ category: event.target.value || undefined })
+          onValueChange={(value) =>
+            setFilters({ category: value || undefined })
           }
-        >
-          <option value="">Toutes les catégories</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.label}
-            </option>
-          ))}
-        </Select>
+          options={[
+            { value: "", label: "Toutes les catégories" },
+            ...categories.map((category) => ({
+              value: category.id,
+              label: category.label,
+            })),
+          ]}
+        />
         <Select
           aria-label="Niveau de stock"
           value={query.stock ?? ""}
-          onChange={(event) =>
-            setFilters({ stock: event.target.value || undefined })
-          }
-        >
-          <option value="">Tous les stocks</option>
-          <option value="in">En stock</option>
-          <option value="low">Stock faible</option>
-          <option value="out">Rupture</option>
-        </Select>
+          onValueChange={(value) => setFilters({ stock: value || undefined })}
+          options={[
+            { value: "", label: "Tous les stocks" },
+            { value: "in", label: "En stock" },
+            { value: "low", label: "Stock faible" },
+            { value: "out", label: "Rupture" },
+          ]}
+        />
         <Select
           aria-label="Trier par"
           value={query.sort}
-          onChange={(event) =>
-            setFilters({
-              sort:
-                event.target.value === "-createdAt"
-                  ? undefined
-                  : event.target.value,
-            })
+          onValueChange={(value) =>
+            setFilters({ sort: value === "-createdAt" ? undefined : value })
           }
-        >
-          {Object.entries(SORT_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </Select>
+          options={Object.entries(SORT_LABELS).map(([value, label]) => ({
+            value,
+            label,
+          }))}
+        />
         {filtered ? (
           <Button
             variant="ghost"

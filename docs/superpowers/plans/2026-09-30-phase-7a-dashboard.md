@@ -32,4 +32,4 @@ Contraintes : TDD, `requireAdmin`, CI locale avant chaque push ; Recharts ajout�
 
 ### Tâche 7 : E2E, documentation, PR
 
-- [ ] `tests/e2e/dashboard.spec.ts`, README ; PR « Phase 7a — Tableau de bord ».
+- [x] `tests/e2e/dashboard.spec.ts`, README ; PR « Phase 7a — Tableau de bord ».

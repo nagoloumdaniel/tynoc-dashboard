@@ -14,7 +14,7 @@ La feuille de route complète et les choix d'architecture sont dans [ROADMAP.md]
 - [x] Phase 4 — Catégories
 - [x] Phase 5 — Utilisateurs
 - [x] Phase 6 — Paniers et wishlists
-- [ ] Phase 7 — Dashboard et activité
+- [ ] Phase 7 — Dashboard et activité (7a tableau de bord fait ; 7b images S3 et 7c notifications à venir)
 - [ ] Phase 8 — Durcissement et livraison
 
 ## Installation locale
@@ -65,6 +65,7 @@ Tester un déploiement : `E2E_BASE_URL=https://tynoc-dashboard.vercel.app pnpm t
 | `DYNAMODB_ENDPOINT`     | —           | `http://localhost:8000` en local, vide en production |
 | `DYNAMODB_TABLE_PREFIX` | `tynoc-`    | préfixe des noms de tables                           |
 | `AWS_ROLE_ARN`          | —           | production : rôle IAM assumé via Vercel OIDC         |
+| `CRON_SECRET`           | —           | production : secret du cron quotidien (≥ 16 car.)    |
 
 Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts). Aucun secret AWS n'est committé ; en production l'accès passe par un rôle IAM (OIDC).
 
@@ -94,6 +95,15 @@ Les variables sont validées au démarrage par [src/lib/env.ts](src/lib/env.ts).
 - Détail : prix, quantité face au stock, sous-total, disponibilité (disponible, stock insuffisant, rupture, archivé, supprimé), total ; un administrateur peut retirer un article ou vider (confirmation + journal). Même chose pour `/admin/wishlists`.
 - **Contrat de données pour la boutique :** chaque ligne de panier porte `feed: "CART"` et `updatedAt`, chaque ligne de wishlist `feed: "WISHLIST"` et `addedAt`. L'index `byFeed` permet de lister toutes les lignes sans `Scan`.
 - Après une mise à jour du modèle, `pnpm db:create` (ou `-- --aws`) ajoute les index manquants aux tables existantes.
+
+## Tableau de bord et activité
+
+- `/admin` : période 7 / 30 / 90 jours dans l'URL ; 7 indicateurs du jour (utilisateurs, produits, catégories, articles en panier et en wishlist, ruptures, stock faible) comparés à l'état d'il y a N jours, et 5 mouvements de la période (nouveaux clients et produits, ajouts au panier et en wishlist, actions des admins) comparés à la période précédente. Chaque carte mène à la liste filtrée.
+- Graphiques (Recharts, chargés dans le navigateur) : nouveaux clients par jour, produits par catégorie, produits les plus mis en wishlist ; chacun a sa table « Voir les données ». Widgets : alertes de stock, activité récente, derniers produits et clients.
+- Chaque bloc se charge et échoue indépendamment (`Suspense` + `catchError`, bouton « Réessayer »).
+- **Historique :** les totaux du jour sont copiés chaque nuit dans `Stats` (`SNAPSHOT#AAAA-MM-JJ`) par le cron Vercel `/api/cron/snapshot` (`vercel.json`, protégé par `CRON_SECRET`). Sans relevé à la date voulue, la carte affiche « Pas encore d'historique ».
+- `/admin/activity` : journal complet, filtres période / élément / action / auteur, « Voir plus » par curseur, modifications détaillées champ par champ.
+- Thème clair, sombre ou système dans le menu du compte.
 
 ## Authentification et rôles
 

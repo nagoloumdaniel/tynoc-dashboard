@@ -10,6 +10,8 @@ const TEST_DB_ENV = {
   AWS_REGION: "eu-west-3",
   DYNAMODB_ENDPOINT: "http://localhost:8000",
   DYNAMODB_TABLE_PREFIX: "tynoc-test-",
+  S3_ENDPOINT: "http://localhost:9000",
+  S3_BUCKET: "tynoc-test-images",
 };
 
 export default defineConfig({

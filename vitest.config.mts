@@ -37,6 +37,8 @@ export default defineConfig({
             DYNAMODB_ENDPOINT: "http://localhost:8000",
             DYNAMODB_TABLE_PREFIX: "tynoc-test-",
             CRON_SECRET: "test-cron-secret-0123456789",
+            S3_ENDPOINT: "http://localhost:9000",
+            S3_BUCKET: "tynoc-test-images",
           },
         },
       },

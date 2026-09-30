@@ -11,12 +11,12 @@ Décisions :
 - Envoi direct navigateur → S3 par **POST présigné** (conditions S3 : préfixe de clé exact, type `image/jpeg|png|webp`, 1 o à 5 Mo, 5 min) ; le serveur ne voit jamais le fichier.
 - Rattachement ensuite par Server Action : clé sous `products/<id>/`, objet présent (`HeadObject`), 8 images max, verrou de version, entrée de journal dans la même transaction.
 - Suppression : retrait de la clé (transaction) puis effacement S3 ; suppression définitive d'un produit → effacement de ses images après la transaction.
-- Local / E2E : MinIO (Docker, port 9000) ; bucket, politique publique `products/*` et CORS créés par `pnpm db:create` / `db:test:reset`. `next/image` n'autorise les IP locales que si `S3_ENDPOINT` est défini.
+- Local / E2E : RustFS (Docker, port 9000 ; les images MinIO ne sont plus publiées) ; bucket, politique publique `products/*` et CORS créés par `pnpm db:create` / `db:test:reset`. `next/image` n'autorise les IP locales que si `S3_ENDPOINT` est défini.
 - Limite connue : un fichier envoyé mais jamais rattaché (onglet fermé) reste dans S3 ; nettoyage à prévoir (phase 8).
 
 ### Tâche 1 : infrastructure
 
-- [ ] MinIO dans `docker-compose.yml`, variables `S3_BUCKET` / `S3_ENDPOINT` / `S3_PUBLIC_URL`, client S3 partagé, `scripts/lib/ensure-bucket.ts`, CI locale démarre MinIO, `next.config.ts` (`remotePatterns`) ; commit `feat(images): add S3 storage and local MinIO`.
+- [x] RustFS dans `docker-compose.yml`, variables `S3_BUCKET` / `S3_ENDPOINT` / `S3_PUBLIC_URL`, client S3 partagé, `scripts/lib/ensure-bucket.ts`, CI locale démarre MinIO, `next.config.ts` (`remotePatterns`) ; commit `feat(images): add S3 storage and local RustFS`.
 
 ### Tâche 2 : règles (pur)
 

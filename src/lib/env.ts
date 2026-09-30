@@ -11,6 +11,18 @@ const serverEnvSchema = z.object({
     .string()
     .regex(/^[a-zA-Z0-9_.-]*$/, "lettres, chiffres, _ . - uniquement")
     .default("tynoc-"),
+  // Product images. Without a bucket the gallery says storage is off.
+  S3_BUCKET: z.preprocess(
+    emptyToUndefined,
+    z
+      .string()
+      .regex(/^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$/, "nom de bucket S3 invalide")
+      .optional(),
+  ),
+  // Set only for the local RustFS container; empty in production.
+  S3_ENDPOINT: z.preprocess(emptyToUndefined, z.url().optional()),
+  // Optional override of the public base URL (e.g. a CDN).
+  S3_PUBLIC_URL: z.preprocess(emptyToUndefined, z.url().optional()),
   // Sent by Vercel Cron as "Authorization: Bearer <secret>".
   CRON_SECRET: z.preprocess(emptyToUndefined, z.string().min(16).optional()),
   // Production only: IAM role assumed through Vercel OIDC (no stored AWS keys).

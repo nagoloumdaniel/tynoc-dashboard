@@ -7,3 +7,18 @@ services:
     volumes:
       - ./.dynamodb:/home/dynamodblocal/data
     user: root
+
+  # S3-compatible storage for product images (MinIO images are no longer
+  # published). Credentials match LOCAL_S3_CREDENTIALS in src/lib/aws/client.ts.
+  s3:
+    image: rustfs/rustfs:1.0.0
+    environment:
+      RUSTFS_ACCESS_KEY: tynoc
+      RUSTFS_SECRET_KEY: tynoc-local-secret
+    ports:
+      - "9000:9000"
+    volumes:
+      - s3-data:/data
+
+volumes:
+  s3-data:

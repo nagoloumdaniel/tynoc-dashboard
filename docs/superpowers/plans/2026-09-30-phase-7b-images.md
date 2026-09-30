@@ -16,7 +16,7 @@ Décisions :
 
 ### Tâche 1 : infrastructure
 
-- [x] RustFS dans `docker-compose.yml`, variables `S3_BUCKET` / `S3_ENDPOINT` / `S3_PUBLIC_URL`, client S3 partagé, `scripts/lib/ensure-bucket.ts`, CI locale démarre MinIO, `next.config.ts` (`remotePatterns`) ; commit `feat(images): add S3 storage and local RustFS`.
+- [x] RustFS dans `docker-compose.yml`, variables `S3_BUCKET` / `S3_ENDPOINT` / `S3_PUBLIC_URL`, client S3 partagé, `scripts/lib/ensure-bucket.ts`, CI locale démarre RustFS, `next.config.ts` (`remotePatterns`) ; commit `feat(images): add S3 storage and local RustFS`.
 
 ### Tâche 2 : règles (pur)
 
@@ -32,8 +32,8 @@ Décisions :
 
 ### Tâche 5 : production
 
-- [ ] Bucket AWS, politique, CORS, droits du rôle Vercel, variables Vercel, `docs/deploiement-aws.md`.
+- [x] Bucket AWS, politique, CORS, droits du rôle Vercel, variables Vercel, `docs/deploiement-aws.md`.
 
 ### Tâche 6 : E2E, documentation, PR
 
-- [ ] `tests/e2e/images.spec.ts`, README ; PR « Phase 7b — Images produits ».
+- [x] `tests/e2e/images.spec.ts`, README ; PR « Phase 7b — Images produits ».

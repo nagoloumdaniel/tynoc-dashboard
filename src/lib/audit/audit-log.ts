@@ -17,6 +17,8 @@ export type AuditAction =
   | "PASSWORD_RESET"
   | "PASSWORD_CHANGE"
   | "ANONYMIZE"
+  | "REMOVE_ITEM"
+  | "EMPTY"
   | "DELETE"
   | "STOCK_ADJUST"
   | "ROLE_CHANGE"

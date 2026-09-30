@@ -1,14 +1,17 @@
 import {
   CreateTableCommand,
   DeleteTableCommand,
+  DescribeTableCommand,
   DescribeTimeToLiveCommand,
   type DynamoDBClient,
   ListTablesCommand,
+  UpdateTableCommand,
   UpdateTimeToLiveCommand,
   waitUntilTableExists,
   waitUntilTableNotExists,
 } from "@aws-sdk/client-dynamodb";
 import {
+  missingIndexes,
   TABLES,
   type TableKey,
   TTL_ATTRIBUTES,
@@ -43,6 +46,49 @@ async function ensureTtl(client: DynamoDBClient, name: string, attr: string) {
   return true;
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Adds indexes introduced after a table was created. DynamoDB builds one
+ * index at a time per UpdateTable call, so each is awaited until ACTIVE.
+ */
+async function addMissingIndexes(
+  client: DynamoDBClient,
+  key: TableKey,
+  name: string,
+  log: (message: string) => void,
+) {
+  const { Table } = await client.send(
+    new DescribeTableCommand({ TableName: name }),
+  );
+  const existing = (Table?.GlobalSecondaryIndexes ?? []).map(
+    (i) => i.IndexName ?? "",
+  );
+
+  for (const index of missingIndexes(key, existing)) {
+    const { attributes, ...definition } = index;
+    await client.send(
+      new UpdateTableCommand({
+        TableName: name,
+        AttributeDefinitions: attributes,
+        GlobalSecondaryIndexUpdates: [{ Create: definition }],
+      }),
+    );
+    log(`  + index ${definition.IndexName} sur ${name} (construction…)`);
+    for (let attempt = 0; attempt < 150; attempt++) {
+      const { Table: table } = await client.send(
+        new DescribeTableCommand({ TableName: name }),
+      );
+      const status = table?.GlobalSecondaryIndexes?.find(
+        (i) => i.IndexName === definition.IndexName,
+      )?.IndexStatus;
+      if (status === "ACTIVE") break;
+      await sleep(2000);
+    }
+    log(`  index ${definition.IndexName} actif`);
+  }
+}
+
 // Idempotent: creates missing tables and enables TTL where the model needs it.
 export async function ensureTables(
   client: DynamoDBClient,
@@ -55,6 +101,7 @@ export async function ensureTables(
     const name = tableName(key, prefix);
     if (existing.has(name)) {
       log(`= ${name} (existe déjà)`);
+      await addMissingIndexes(client, key, name, log);
     } else {
       await client.send(
         new CreateTableCommand({

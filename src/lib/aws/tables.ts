@@ -69,14 +69,31 @@ export const TABLES = {
     ],
   },
   Carts: {
-    AttributeDefinitions: [s("userId"), s("productId")],
+    AttributeDefinitions: [
+      s("userId"),
+      s("productId"),
+      s("feed"),
+      s("updatedAt"),
+    ],
     KeySchema: [hash("userId"), range("productId")],
-    GlobalSecondaryIndexes: [gsi("byProduct", "productId", "userId")],
+    GlobalSecondaryIndexes: [
+      gsi("byProduct", "productId", "userId"),
+      // Every cart line (feed = "CART"), newest first: lists without a Scan.
+      gsi("byFeed", "feed", "updatedAt"),
+    ],
   },
   Wishlists: {
-    AttributeDefinitions: [s("userId"), s("productId"), s("addedAt")],
+    AttributeDefinitions: [
+      s("userId"),
+      s("productId"),
+      s("addedAt"),
+      s("feed"),
+    ],
     KeySchema: [hash("userId"), range("productId")],
-    GlobalSecondaryIndexes: [gsi("byProduct", "productId", "addedAt")],
+    GlobalSecondaryIndexes: [
+      gsi("byProduct", "productId", "addedAt"),
+      gsi("byFeed", "feed", "addedAt"),
+    ],
   },
   AuditLogs: {
     AttributeDefinitions: [
@@ -121,4 +138,29 @@ export const TTL_ATTRIBUTES: Partial<Record<TableKey, string>> = {
 
 export function tableName(table: TableKey, prefix: string): string {
   return `${prefix}${table}`;
+}
+
+type IndexDefinition = ReturnType<typeof gsi>;
+
+/**
+ * Indexes of the data model that an existing table does not have yet, with
+ * the attribute definitions DynamoDB needs to create them.
+ */
+export function missingIndexes(
+  key: TableKey,
+  existing: string[],
+): (IndexDefinition & {
+  attributes: { AttributeName: string; AttributeType: "S" | "N" }[];
+})[] {
+  const definition = TABLES[key] as TableDefinition;
+  const indexes = (definition.GlobalSecondaryIndexes ??
+    []) as IndexDefinition[];
+  return indexes
+    .filter((index) => !existing.includes(index.IndexName))
+    .map((index) => ({
+      ...index,
+      attributes: (definition.AttributeDefinitions ?? []).filter((attr) =>
+        index.KeySchema.some((k) => k.AttributeName === attr.AttributeName),
+      ) as { AttributeName: string; AttributeType: "S" | "N" }[],
+    }));
 }

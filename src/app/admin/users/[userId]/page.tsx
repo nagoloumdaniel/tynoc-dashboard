@@ -160,12 +160,23 @@ export default async function UserPage({
         <section className="h-fit rounded-lg border bg-surface p-5">
           <h2 className="mb-4 text-base font-semibold">Activité boutique</h2>
           <dl className="divide-y">
-            <Row label="Articles dans le panier">{cartItems}</Row>
-            <Row label="Produits en wishlist">{wishlistItems}</Row>
+            <Row label="Articles dans le panier">
+              <Link
+                href={`/admin/carts/${user.id}`}
+                className="hover:underline"
+              >
+                {cartItems} · voir
+              </Link>
+            </Row>
+            <Row label="Produits en wishlist">
+              <Link
+                href={`/admin/wishlists/${user.id}`}
+                className="hover:underline"
+              >
+                {wishlistItems} · voir
+              </Link>
+            </Row>
           </dl>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Le détail du panier et de la wishlist arrive à la phase 6.
-          </p>
         </section>
       </div>
     </>

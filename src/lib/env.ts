@@ -11,6 +11,8 @@ const serverEnvSchema = z.object({
     .string()
     .regex(/^[a-zA-Z0-9_.-]*$/, "lettres, chiffres, _ . - uniquement")
     .default("tynoc-"),
+  // Sent by Vercel Cron as "Authorization: Bearer <secret>".
+  CRON_SECRET: z.preprocess(emptyToUndefined, z.string().min(16).optional()),
   // Production only: IAM role assumed through Vercel OIDC (no stored AWS keys).
   AWS_ROLE_ARN: z.preprocess(
     emptyToUndefined,

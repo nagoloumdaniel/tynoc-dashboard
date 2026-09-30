@@ -2,7 +2,7 @@
 
 import { SearchInput } from "@/components/data-table/search-input";
 import { useUrlFilters } from "@/components/data-table/use-url-filters";
-import { Select } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 
 /** Search, sort and (carts only) the abandoned filter, kept in the URL. */
 export function ListFilters({
@@ -27,39 +27,34 @@ export function ListFilters({
         <Select
           aria-label="Paniers affichés"
           value={abandoned ? "1" : ""}
-          onChange={(event) =>
-            setFilters({ abandoned: event.target.value || undefined })
+          onValueChange={(value) =>
+            setFilters({ abandoned: value || undefined })
           }
-        >
-          <option value="">Tous les paniers</option>
-          <option value="1">Abandonnés (plus de 7 jours)</option>
-        </Select>
+          options={[
+            { value: "", label: "Tous les paniers" },
+            { value: "1", label: "Abandonnés (plus de 7 jours)" },
+          ]}
+        />
       ) : null}
       <Select
         aria-label="Trier par"
         value={sort}
-        onChange={(event) =>
-          setFilters({
-            sort:
-              event.target.value === defaultSort
-                ? undefined
-                : event.target.value,
-          })
+        onValueChange={(value) =>
+          setFilters({ sort: value === defaultSort ? undefined : value })
         }
-      >
-        {kind === "CART" ? (
-          <>
-            <option value="-updatedAt">Modifiés récemment</option>
-            <option value="updatedAt">Plus anciens</option>
-            <option value="-value">Valeur la plus élevée</option>
-          </>
-        ) : (
-          <>
-            <option value="-addedAt">Ajouts récents</option>
-            <option value="-count">Plus de produits</option>
-          </>
-        )}
-      </Select>
+        options={
+          kind === "CART"
+            ? [
+                { value: "-updatedAt", label: "Modifiés récemment" },
+                { value: "updatedAt", label: "Plus anciens" },
+                { value: "-value", label: "Valeur la plus élevée" },
+              ]
+            : [
+                { value: "-addedAt", label: "Ajouts récents" },
+                { value: "-count", label: "Plus de produits" },
+              ]
+        }
+      />
     </div>
   );
 }

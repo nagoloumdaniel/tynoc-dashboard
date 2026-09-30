@@ -4,7 +4,7 @@ import { RotateCcwIcon } from "lucide-react";
 import { SearchInput } from "@/components/data-table/search-input";
 import { useUrlFilters } from "@/components/data-table/use-url-filters";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import type { UserListQuery } from "../schemas";
 
 export function UserFilters({ query }: { query: UserListQuery }) {
@@ -28,47 +28,40 @@ export function UserFilters({ query }: { query: UserListQuery }) {
       <Select
         aria-label="Type de compte"
         value={query.type}
-        onChange={(event) =>
-          setFilters({
-            type: event.target.value === "all" ? undefined : event.target.value,
-          })
+        onValueChange={(value) =>
+          setFilters({ type: value === "all" ? undefined : value })
         }
-      >
-        <option value="all">Tous les comptes</option>
-        <option value="customers">Clients</option>
-        <option value="admins">Administrateurs</option>
-      </Select>
+        options={[
+          { value: "all", label: "Tous les comptes" },
+          { value: "customers", label: "Clients" },
+          { value: "admins", label: "Administrateurs" },
+        ]}
+      />
       <Select
         aria-label="Statut"
         value={query.status}
-        onChange={(event) =>
-          setFilters({
-            status:
-              event.target.value === "current" ? undefined : event.target.value,
-          })
+        onValueChange={(value) =>
+          setFilters({ status: value === "current" ? undefined : value })
         }
-      >
-        <option value="current">Actifs et suspendus</option>
-        <option value="ACTIVE">Actifs</option>
-        <option value="SUSPENDED">Suspendus</option>
-        <option value="DELETED">Anonymisés</option>
-      </Select>
+        options={[
+          { value: "current", label: "Actifs et suspendus" },
+          { value: "ACTIVE", label: "Actifs" },
+          { value: "SUSPENDED", label: "Suspendus" },
+          { value: "DELETED", label: "Anonymisés" },
+        ]}
+      />
       <Select
         aria-label="Trier par"
         value={query.sort}
-        onChange={(event) =>
-          setFilters({
-            sort:
-              event.target.value === "-createdAt"
-                ? undefined
-                : event.target.value,
-          })
+        onValueChange={(value) =>
+          setFilters({ sort: value === "-createdAt" ? undefined : value })
         }
-      >
-        <option value="-createdAt">Plus récents</option>
-        <option value="createdAt">Plus anciens</option>
-        <option value="name">Nom (A → Z)</option>
-      </Select>
+        options={[
+          { value: "-createdAt", label: "Plus récents" },
+          { value: "createdAt", label: "Plus anciens" },
+          { value: "name", label: "Nom (A → Z)" },
+        ]}
+      />
       {filtered ? (
         <Button
           variant="ghost"

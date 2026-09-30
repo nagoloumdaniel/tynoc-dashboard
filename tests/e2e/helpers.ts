@@ -1,4 +1,4 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export const IS_REMOTE = !!process.env.E2E_BASE_URL;
 
@@ -21,6 +21,16 @@ export function accountButton(page: Page, name: string) {
   return page.getByRole("button", {
     name: IS_REMOTE ? /^Compte de / : `Compte de ${name}`,
   });
+}
+
+/** Picks an option in the custom Select (the list opens in a portal). */
+export async function chooseOption(trigger: Locator, option: string) {
+  await trigger.click();
+  await trigger
+    .page()
+    .getByRole("option", { name: option, exact: true })
+    .click();
+  await expect(trigger).toContainText(option);
 }
 
 export async function expectLoggedIn(page: Page, name: string) {

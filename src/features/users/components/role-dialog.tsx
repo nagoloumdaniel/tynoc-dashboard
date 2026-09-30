@@ -11,7 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label, Select } from "@/components/ui/field";
+import { Label } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { changeUserRoleAction } from "../actions";
 import { USER_ROLE_LABELS, USER_ROLES, type UserRole } from "../types";
 import { TemporaryPassword } from "./temporary-password";
@@ -78,14 +79,12 @@ export function RoleDialog({
               <Select
                 id="role-select"
                 value={role}
-                onChange={(event) => setRole(event.target.value as UserRole)}
-              >
-                {USER_ROLES.map((value) => (
-                  <option key={value} value={value}>
-                    {USER_ROLE_LABELS[value]}
-                  </option>
-                ))}
-              </Select>
+                onValueChange={(value) => setRole(value as UserRole)}
+                options={USER_ROLES.map((value) => ({
+                  value,
+                  label: USER_ROLE_LABELS[value],
+                }))}
+              />
             </div>
             {error ? (
               <p role="alert" className="mt-3 text-sm text-danger">

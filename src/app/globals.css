@@ -18,7 +18,10 @@
   --success: #16a34a;
   --warning: #b45309;
   --danger: #dc2626;
+  --danger-foreground: #ffffff;
   --info: #0284c7;
+  /* Single-series charts; each mode's step is validated against its surface. */
+  --chart-1: #4f46e5;
 
   /* The ink sidebar is the one signature surface; everything else stays quiet. */
   --sidebar: #1e1b4b;
@@ -32,7 +35,9 @@
   --radius: 0.5rem;
 }
 
+/* Status tones are lighter here: each one keeps >= 4.5:1 on every dark surface. */
 .dark {
+  color-scheme: dark;
   --background: #0b1120;
   --surface: #111827;
   --surface-muted: #1f2937;
@@ -43,6 +48,12 @@
   --primary-hover: #a5b4fc;
   --primary-foreground: #0b1120;
   --ring: #a5b4fc;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --danger-foreground: #0b1120;
+  --info: #38bdf8;
+  --chart-1: #6366f1;
   --sidebar: #0f0d2e;
 }
 
@@ -63,7 +74,9 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
   --color-info: var(--info);
+  --color-chart-1: var(--chart-1);
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);

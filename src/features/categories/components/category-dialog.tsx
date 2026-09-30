@@ -10,7 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FormField, Input, Select, Textarea } from "@/components/ui/field";
+import { FormField, Input, Textarea } from "@/components/ui/field";
+import { Select } from "@/components/ui/select";
 import { slugify } from "@/lib/format";
 import {
   type CategoryField,
@@ -120,14 +121,14 @@ function CategoryForm({
             name="parentId"
             defaultValue={values?.parentId ?? category?.parentId ?? ROOT_PARENT}
             disabled={category?.hasChildren}
-          >
-            <option value={ROOT_PARENT}>Aucune (catégorie principale)</option>
-            {selectableParents.map((parent) => (
-              <option key={parent.id} value={parent.id}>
-                {parent.name}
-              </option>
-            ))}
-          </Select>
+            options={[
+              { value: ROOT_PARENT, label: "Aucune (catégorie principale)" },
+              ...selectableParents.map((parent) => ({
+                value: parent.id,
+                label: parent.name,
+              })),
+            ]}
+          />
         )}
       </FormField>
       {/* A disabled select is not submitted: keep the current parent. */}

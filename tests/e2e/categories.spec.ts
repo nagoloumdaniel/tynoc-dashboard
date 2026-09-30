@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { expect, type Page, test } from "@playwright/test";
-import { IS_REMOTE } from "./helpers";
+import { chooseOption, IS_REMOTE } from "./helpers";
 import { AUTH_STATE } from "./test-users";
 
 test.skip(IS_REMOTE, "writes categories");
@@ -11,9 +11,7 @@ async function createCategory(page: Page, name: string, parent?: string) {
   const dialog = page.getByRole("dialog");
   await dialog.getByLabel("Nom").fill(name);
   if (parent) {
-    await dialog
-      .getByLabel("Catégorie parente")
-      .selectOption({ label: parent });
+    await chooseOption(dialog.getByLabel("Catégorie parente"), parent);
   }
   await dialog.getByRole("button", { name: "Créer la catégorie" }).click();
   await expect(page.getByText("Catégorie créée.")).toBeVisible();
@@ -32,9 +30,7 @@ test("a sub-category is used by products and protected while it has some", async
   await page.goto("/admin/products/new");
   await page.getByLabel("Nom", { exact: true }).fill(`Tabouret ${id}`);
   await page.getByLabel("SKU").fill(sku);
-  await page
-    .getByLabel("Catégorie")
-    .selectOption({ label: `Mobilier › ${name}` });
+  await chooseOption(page.getByLabel("Catégorie"), `Mobilier › ${name}`);
   await page.getByLabel("Prix (€)").fill("35");
   await page.getByLabel("Stock initial").fill("4");
   await page.getByRole("button", { name: "Créer le produit" }).click();

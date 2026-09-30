@@ -36,6 +36,7 @@ export default defineConfig({
             AWS_REGION: "eu-west-3",
             DYNAMODB_ENDPOINT: "http://localhost:8000",
             DYNAMODB_TABLE_PREFIX: "tynoc-test-",
+            CRON_SECRET: "test-cron-secret-0123456789",
           },
         },
       },

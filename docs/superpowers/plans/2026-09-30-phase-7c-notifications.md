@@ -24,7 +24,7 @@ Décisions :
 
 ### Tâche 3 : lecture
 
-- [ ] `GET /api/notifications`, action « Tout marquer comme lu » + tests ; commit `feat(notifications): add notifications feed`.
+- [x] `GET /api/notifications`, action « Tout marquer comme lu » + tests ; commit `feat(notifications): add notifications feed`.
 
 ### Tâche 4 : interface
 

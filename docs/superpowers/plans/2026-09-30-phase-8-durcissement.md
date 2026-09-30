@@ -18,11 +18,11 @@ Décisions :
 
 ### Tâche 2 : accessibilité et performance
 
-- [ ] `@axe-core/playwright` sur toutes les pages (desktop, mobile, sombre), corrections ; Lighthouse sur la prod ; commit `test(a11y): check every page with axe`.
+- [x] `@axe-core/playwright` sur toutes les pages (desktop, mobile, sombre), corrections ; Lighthouse sur la prod ; commit `test(a11y): check every page with axe`.
 
 ### Tâche 3 : images orphelines
 
-- [ ] Règle pure (orphelines et ancienneté) + tests, route cron protégée, `vercel.json`, droit `s3:ListBucket` limité à `products/` ; commit `feat(images): clean up orphan uploads weekly`.
+- [x] Règle pure (orphelines et ancienneté) + tests, route cron protégée, `vercel.json`, droit `s3:ListBucket` limité à `products/` ; commit `feat(images): clean up orphan uploads weekly`.
 
 ### Tâche 4 : démo en production
 

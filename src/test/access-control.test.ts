@@ -47,7 +47,10 @@ const PUBLIC: Record<string, RegExp> = {
   // A temporary password must be replaceable before requireAdmin passes.
   "features/auth/actions.ts#changePasswordAction": /getSession\(/,
   // Vercel Cron, authenticated by the shared secret.
-  "app/api/cron/snapshot/route.ts#GET": /CRON_SECRET/,
+  "app/api/cron/snapshot/route.ts#GET":
+    /cronGuard\(request\)[\s\S]*if \(refused\) return refused/,
+  "app/api/cron/cleanup-images/route.ts#GET":
+    /cronGuard\(request\)[\s\S]*if \(refused\) return refused/,
   // JSON 401 for the polling bell instead of a redirect.
   "app/api/notifications/route.ts#GET": /getSession\(\)[\s\S]*status: 401/,
 };
